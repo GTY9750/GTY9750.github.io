@@ -103,5 +103,5 @@ theme: yinwang
 ## Docs: https://hexo.io/docs/one-command-deployment
 deploy:
   type: git
-  repo: https://github.com/GTY9750/GTY9750.github.io.git
+  repo: https://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@github.com/GTY9750/GTY9750.github.io.git
   branch: main
