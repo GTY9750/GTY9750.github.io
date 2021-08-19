@@ -3,18 +3,18 @@
 ## Source: https://github.com/hexojs/hexo/
 
 # Site
-title: gtygo
-subtitle: ''
-description: ''
-keywords:
+title: tinking
+subtitle: 'thinking every thing'
+description: 'A cutting-edge information technology article aggregation website, content includes programming guide, technology sharing, thinking insights.'
+keywords: Kubernetes linux golang k8s system design 
 author: gtygo
 language: en
 timezone: ''
 
 # URL
 ## Set your site url here. For example, if you use GitHub Page, set url as 'https://username.github.io/project'
-url: http://gtygo.com
-permalink: :year/:month/:day/:title/
+url: https://www.gtygo.com
+permalink: :title.html
 permalink_defaults:
 pretty_urls:
   trailing_index: true # Set to false to remove trailing 'index.html' from permalinks
@@ -103,5 +103,10 @@ theme: yinwang
 ## Docs: https://hexo.io/docs/one-command-deployment
 deploy:
   type: git
-  repo: https://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@github.com/GTY9750/GTY9750.github.io.git
+  repo: https://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@github.com/GTY9750/GTY9750.github.io.git
   branch: main
+
+sitemap:
+	path: sitemap.xml
+baidusitemap:
+	path: baidusitemap.xml
