@@ -1,0 +1,126 @@
+<html>
+<head>
+	
+	<title>Why IPv6 is a difficult replacement for IPv4</title>
+	<meta name="keywords" content="information tech" />
+
+    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+    
+	   <link href="/css/main.css?v=3" rel="stylesheet" type="text/css" />
+    
+        
+<script src="/js/util.js"></script>
+
+        <script>
+            if(isMobile()) {
+                loadjscssfile('../css/mobile.css', 'css');
+            } else {
+                loadjscssfile('../css/desktop.css', 'css');
+            }
+        </script> 
+    
+
+    <link rel="alternate" type="application/atom+xml" href="/atom.xml" title="Atom feed">
+
+    
+	<link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=3"/>
+    
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-76SLJ1L5G2"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-76SLJ1L5G2');
+</script>
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-76SLJ1L5G2"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+
+        gtag('config', 'G-76SLJ1L5G2');
+    </script>
+    <script data-ad-client="ca-pub-8355064206464637" async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+
+<body>
+
+
+<h2 class="title">Why IPv6 is a difficult replacement for IPv4</h2>
+<!--
+<div style="text-align:center;margin-top: -10px;">
+<div class="article-category">
+发表于2021年9月1日
+
+
+
+
+ </div>
+-->
+</div>
+
+<ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#Why-IPv6-is-a-difficult-replacement-for-IPv4"><span class="toc-text">Why IPv6 is a difficult replacement for IPv4</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#NAT"><span class="toc-text">NAT</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Compatibility"><span class="toc-text">Compatibility</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Address-Control"><span class="toc-text">Address Control</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#In-Summary"><span class="toc-text">In Summary</span></a></li></ol></li></ol>
+<h1 id="Why-IPv6-is-a-difficult-replacement-for-IPv4"><a href="#Why-IPv6-is-a-difficult-replacement-for-IPv4" class="headerlink" title="Why IPv6 is a difficult replacement for IPv4"></a>Why IPv6 is a difficult replacement for IPv4</h1><p>As a network layer protocol, it can only provide connectionless and unreliable services, but it plays an extremely critical role in today’s Internet.</p>
+<p>In general, when we want to access the services provided by other hosts, we need to access the target host through an IP address, which is the only way to be accessed by other hosts on the Internet. IP addresses are like home addresses, and we need to ensure that all host IP addresses are unique so that we can find the right host.</p>
+<p>The first major version of the IP protocol, IPv4, which was created in 1974,1 used a 32-bit representation of addresses, providing a total of 2^32 (4,294,967,296) IP addresses.2 While 4.2 billion IP addresses may seem like a lot, the number of available IPv4 addresses has been decreasing in recent years, and as early as 2011, the top IPv4 addresses were all allocated.</p>
+<p>To address the impending exhaustion of IP addresses, the IETF released a draft of the IPv6 protocol in 19984 and it officially became an Internet standard in 2017.5 IPv6 uses 128-bit IP addresses, which can represent a total of 2^128 addresses, and IPv6 can even assign separate addresses to the sands of the earth6: 2128 = 3402823669</p>
+<p>2128=340282366920938463463374607431768211456≈3.4∗1038<br>The new version of the Internet Protocol, IPv6, will not only solve the problem of impending IP address exhaustion once and for all, but will also increase the speed and security of network transmissions. the designers of the IPv6 protocol initially believed that IPv6 would be adopted rapidly as IPv4 addresses declined rapidly, and they initially estimated that IPv6 would be deployed worldwide by 2003, but from today’s perspective, these predictions were overly optimistic. These predictions are still overly optimistic from today’s perspective.</p>
+<p>The question we want to analyze in this paper is why IPv6 has not been adopted on a large scale, even 17 years after the initial prediction of 2003, despite all the benefits of the IPv6 protocol and its ability to solve the IPv4 address shortage problem. We will discuss several reasons for this here.</p>
+<p>NAT technology has largely alleviated the IPv4 address shortage.<br>IPv6 protocols were not designed with compatibility with IPv4 in mind.<br>finer-grained control of IPv4 addresses and recovery of idle resources.</p>
+<h2 id="NAT"><a href="#NAT" class="headerlink" title="NAT"></a>NAT</h2><p>Network Address Translation (NAT) is a technology that modifies network addresses as IP packets pass through a router, mapping the IP address in the current address space to another address space. When switching networks or upstream ISPs change, NAT technology can avoid modifying the IPs of all nodes in the network. We can think of NAT technology as a translation table that stores the translation relationships from external addresses and ports to internal addresses and ports.</p>
+<p>When a packet accesses the external network from the inside, NAT assigns a port to the current request, overwrites the source address and port in the packet, and stores the address and port information in a local translation table.</p>
+<p>By using NAT as an intermediate layer, we can not only protect our private network but also alleviate the IP address shortage problem. However, NAT technology does not have only benefits, it also brings a lot of problems. Hosts under a NAT network do not have a true end-to-end connection to the other side and cannot participate in some Internet protocols, in addition to the following controversial issues that NAT protocol brings.</p>
+<p>the use of port numbers by NAT for process addressing, rather than for host addressing<br>the NAT router, as a Layer 3 (network layer) device, which should only handle packets reaching the network layer<br>that NAT violates the principle that hosts should talk directly to each other.<br>Although NAT has caused many controversies and problems, NAT has become a widely used technology throughout the Internet, and engineers have tried to solve the problems it causes through various NAT traversal techniques, such as SOCKS, UPnP, and ALG.10</p>
+<h2 id="Compatibility"><a href="#Compatibility" class="headerlink" title="Compatibility"></a>Compatibility</h2><p>Software and protocols are designed to follow the current and predictable future, but it is difficult to predict the exact future trends, and current designs become progressively less applicable as scenarios change. All software and protocols need to be updated and iterated, and in the process of updating, we need to consider compatibility, which can generally be divided into Forwarding compatibility and Backward compatibility.</p>
+<p>Forward compatibility: the old version of the system can receive and process the data generated by the new version of the system.<br>Backward compatibility: the new version of the system can receive and process the data generated by the old version of the system.</p>
+<p>If the IPv6 protocol is forward-compatible with IPv4, then the hardware devices used to process IPv4 can process IPv6 data without updating, but the benefits of IPv6 cannot be enjoyed without updating the system; if the IPv6 protocol is backward-compatible with IPv4, then the IPv6 hardware can If the IPv6 protocol is backward-compatible with IPv4, then IPv6 hardware can handle both IPv4 and IPv6 packets, and the entire network can be upgraded seamlessly by replacing IPv4 devices with IPv6 devices.</p>
+<p>If IPv4 and IPv6 were forward-compatible or backward-compatible, the advancement of the IPv6 protocol might not be so complicated, but the IPv6 protocol was not designed with compatibility with earlier versions of the protocol in mind. Although IPv4 and IPv6 are both IP protocols, they are not compatible with each other, so the only way to transition them is through dual-stack, tunneling, or NAT64</p>
+<p>Understandably, the IPv6 protocol wants to get rid of the historical baggage and achieve a completely incompatible design. In the past decades of applying IP protocols, we have encountered many problems, and it is not impossible to carry the historical baggage forward.</p>
+<h2 id="Address-Control"><a href="#Address-Control" class="headerlink" title="Address Control"></a>Address Control</h2><p>While IPv4 addresses are indeed a scarce resource in general, like other scarce resources, the issue of how to allocate them appropriately and provide utilization has always been a major concern. ) are the organizations responsible for assigning IP addresses. Except for some IP addresses reserved for proprietary networks, the remaining addresses are generally assigned in the form of address blocks through subnets.</p>
+<p>In the early development of the Internet Protocol, subnets were divided by the leftmost 8 bits of the IP address, but because this allowed only 256 networks to be divided, it was quickly replaced by the Classful Network Architecture in 1981. The Classful Network Architecture contains three classes of networks, A, B, and C.12</p>
+<p>Class Number of networks Number of hosts</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">A 128 16,777,214</span><br><span class="line">B 16,384 65,534</span><br><span class="line">C 2,097,152 254</span><br></pre></td></tr></table></figure>
+<p>Class A addresses can only be assigned to 128 different networks, each of which can contain 16 million hosts, while Class C addresses can be assigned to 2 million organizations and the networks can contain more than 200 hosts. By classifying IP addresses, we can assign IP address blocks more rationally, but although it classifies IP addresses, it is still a crude division of addresses.</p>
+<p>The IETF proposed Classless Inter-Domain Routing (CIDR) in 1993 to replace the classified network architecture. CIDR is based on Variable-length Subnet Masking (VLSM), and it has two main purposes13.</p>
+<p>To mitigate the growth rate of router relay tables on the Internet.<br>To mitigate the rate of IPv4 address exhaustion.<br>The division of addresses in the classified network architecture is still a bit too ideal, as too small address blocks are often insufficient, and slightly larger address blocks result in greater waste. Unlike categorical network architectures that use only fixed-length subnet masks of 8, 16, and 24 to divide IP address blocks into three classes, CIDR uses variable-length subnet masks to divide address blocks, as shown in the CIDR representation below, where N denotes the prefix length, which can be any value from 0 to 32.</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">A.B.C.D/N</span><br></pre></td></tr></table></figure>
+<p>A.B.C.D/8, A.B.C.D/16, and A.B.C.D/24 can represent different address blocks of A, B, and C, respectively, in categorical network architecture, while other numbers can be used to more flexibly represent subnets with a specific number of networks and hosts.</p>
+<p>In addition to more granular address allocation, recycling and reusing IP resources that are no longer in use is an important means of extending the life of IPv4, but we won’t go into that here. From the allocation of IP addresses, we can see the change of human attitude towards resource usage from abundant to scarce, from rough allocation at the beginning to fine-grained control, later on, abundant resources will always be abused, and only when resources become scarce do we start to calculate carefully.</p>
+<h2 id="In-Summary"><a href="#In-Summary" class="headerlink" title="In Summary"></a>In Summary</h2><p>It has been nearly 40 years since the IPv4 protocol was released in 1981, and during that time it has assumed significant responsibility for packet forwarding and routing as a key protocol in the Internet protocol cluster.</p>
+<p>The IPv6 protocol has shed much of its historical baggage and while more and more websites and network devices are beginning to support IPv6, it is difficult for IPv6 to completely replace IPv4 for many reasons, so let’s revisit this article.</p>
+<p>NAT technology can largely alleviate the IPv4 address shortage and protect private internal networks, providing a firewall function.<br>IPv4 and IPv6 protocols are completely incompatible, and we need to introduce dual stack, tunneling, or NAT64 to solve the compatibility problem, and there are additional costs associated with applying these technologies.<br>the time to IP address exhaustion can be delayed by fine-grained control of resources and reclaiming IP addresses that are no longer in use.<br>The imagination of engineers is boundless, and over the last decade or so we have tried to renew the IPv4 protocol in various ways to slow down the exhaustion of IP resources, but in the foreseeable future the IPv4 protocol will be replaced by IPv6 and we will have an almost endless supply of IP addresses. Finally, let’s look at some of the more open-ended questions that interested readers can ponder.</p>
+<p>What does the IPv5 protocol do? Why haven’t you heard of the IPv5 protocol?<br>How soon do you think the IPv6 protocol will overtake IPv4 in terms of share?<br>If you have questions about the content of this article or want to learn more about the reasons behind some design decisions in software engineering, you can leave a comment below the blog, and the author will promptly respond to any questions related to this article and select the appropriate topic for follow-up content.</p>
+
+
+<!--<a href="https://www.gtygo.com/5.html#disqus_thread" class="article-comment-link">Comments</a>
+<div id="disqus_thread"></div>
+<script type="text/javascript">
+    /* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
+    var disqus_shortname = ''; // required: replace example with your forum shortname
+
+    /* * * DON'T EDIT BELOW THIS LINE * * */
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a target="_blank" rel="noopener" href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+-->
+<div style="display:none">
+<script src="http://s4.cnzz.com/stat.php?id=&web_id=" language="JavaScript"></script>script>
+</div>
+
+
+
+
+
+
+</body>
+</html>

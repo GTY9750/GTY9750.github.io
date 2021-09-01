@@ -1,0 +1,119 @@
+<html>
+<head>
+	
+	<title>Why Linux and macOS don&#39;t need defragmentation？</title>
+	<meta name="keywords" content="information tech" />
+
+    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+    
+	   <link href="/css/main.css?v=3" rel="stylesheet" type="text/css" />
+    
+        
+<script src="/js/util.js"></script>
+
+        <script>
+            if(isMobile()) {
+                loadjscssfile('../css/mobile.css', 'css');
+            } else {
+                loadjscssfile('../css/desktop.css', 'css');
+            }
+        </script> 
+    
+
+    <link rel="alternate" type="application/atom+xml" href="/atom.xml" title="Atom feed">
+
+    
+	<link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=3"/>
+    
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-76SLJ1L5G2"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-76SLJ1L5G2');
+</script>
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-76SLJ1L5G2"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+
+        gtag('config', 'G-76SLJ1L5G2');
+    </script>
+    <script data-ad-client="ca-pub-8355064206464637" async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+
+<body>
+
+
+<h2 class="title">Why Linux and macOS don&#39;t need defragmentation？</h2>
+<!--
+<div style="text-align:center;margin-top: -10px;">
+<div class="article-category">
+发表于2021年9月1日
+
+
+
+
+ </div>
+-->
+</div>
+
+<ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#Why-Linux-and-macOS-don%E2%80%99t-need-defragmentation"><span class="toc-text">Why Linux and macOS don’t need defragmentation</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#File-systems"><span class="toc-text">File systems</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Solid-State-Drives"><span class="toc-text">Solid State Drives</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Summary"><span class="toc-text">Summary</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Recommended-Reading"><span class="toc-text">Recommended Reading</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#References"><span class="toc-text">References</span></a></li></ol></li></ol>
+<h1 id="Why-Linux-and-macOS-don’t-need-defragmentation"><a href="#Why-Linux-and-macOS-don’t-need-defragmentation" class="headerlink" title="Why Linux and macOS don’t need defragmentation"></a>Why Linux and macOS don’t need defragmentation</h1><p>I believe that many software engineers today are using Linux or macOS systems, unlike Windows, we hardly see the concept of disk defragmentation, and from personal experience, the author has not defragmented a disk in macOS for the past seven or eight years, and you won’t find any related operations in today’s disk tools, only through the disk until command, You can only set whether defragmentation is turned on or off for a particular disk with the command diskutil.</p>
+<p>In a previous article, we analyzed why early Windows operating systems might need to defragment their disks every once in a while.1 There are two reasons behind this problem: one is that Windows uses a very simple file system called FAT, which is designed in such a way that the same files may be scattered in different locations on the disk, and the other is that solid-state drives were not popular in the ancient times. mechanical hard drives had poor random read and write performance.</p>
+<p>Linux and macOS systems do not need defragmentation for the opposite reason that Windows does.</p>
+<p>Linux and macOS use file systems that either reduce the probability of fragmentation or implement automatic defragmentation features.<br>solid-state drives have different characteristics than mechanical drives, and defragmentation may not only not significantly help improve the read and write performance, but also be detrimental to the life of the hardware.</p>
+<h2 id="File-systems"><a href="#File-systems" class="headerlink" title="File systems"></a>File systems</h2><p>Linux generally uses Ext2, Ext3, and Ext4 file systems, with most Linux distributions today opting for Ext4. Unlike Windows, which stores multiple files consecutively, Linux scatters files to different parts of the disk, while leaving some space between files to ensure that they are not fragmented when modified or updated.</p>
+<p>Most of today’s macOS uses the APFS file system3, which is a file system optimized by Apple specifically for devices such as solid-state drives. Earlier HFS and HFS+ used a block-based (Extent) design, where each block contains a serial number and a contiguous section of storage space, and this allocation looks for several contiguous blocks in the file system to provide the space needed.</p>
+<p>Both Linux and macOS file systems are designed to be block-based, and the disk space allocation is relatively reasonable, so there are no fragmented disks on Windows systems.</p>
+<p>In addition to the fact that the file system is designed to avoid fragmentation, both Linux and macOS also introduce a delayed space allocation strategy, which delays disk writes as much as possible through buffers, which not only reduces the probability of disk swipes, but also increases the probability of files being written to adjacent blocks, but this mechanism is not without side effects, as more data may be lost in the event of a power failure or crash. However, this mechanism is not without side effects, as more data may be lost in case of a system power failure or crash.</p>
+<p>If fragmentation does occur on the disk, the Linux and macOS file systems will attempt to move the fragmented files without the need for additional defragmentation tools, which is a much better user experience than manually triggering time-consuming defragmentation. macOS HFS+ also supports real-time defragmentation, which is triggered when the following conditions are met4.</p>
+<p>The file is less than 20 MB.<br>the file is stored on more than 8 blocks.<br>the file has not been updated at the last minute.<br>the system has been booted for three minutes.<br>In most cases, the percentage of disk fragmentation in these operating systems is very low and fragmentation only starts when the disk is running low on space, so at that point, we need a larger disk or an updated computer, not defragmentation of the disk.</p>
+<h2 id="Solid-State-Drives"><a href="#Solid-State-Drives" class="headerlink" title="Solid State Drives"></a>Solid State Drives</h2><p>Solid-state drives have been a storage medium for three decades, but because they have been so expensive in the past, they have not been popular in data centers and personal computers. Even today, the price of mechanical disks has a significant advantage over SSDs.</p>
+<p>New storage media brings new features and performance, as we described in a previous article, because of the mechanical structure of a mechanical hard drive, its random I/O, and sequential I/O performance can vary by hundreds of times, defragmentation can combine data scattered across the disk into one place, reducing the number of random I/Os will naturally improve the performance of reading and writing files.</p>
+<p>Although there is a difference in performance between sequential I/O and random I/O on SSDs, the difference may be between a dozen and tens of times, and the random I/O latency of SSDs is tens or even thousands of times better than that of mechanical disks, so the benefits of defragmentation on SSDs are now limited.</p>
+<p>Although SSDs as electronic components have better performance, SSDs are limited to the number of cycles of erasure, also known as P/E. Their lifespan is limited compared to mechanical drives. If a 512 GB solid-state drive is erased 1000 times, each time the data is written will consume life, and when the number of erasures reaches 1000 the drive will be scrapped, defragmentation is actively moving the data on the drive, which naturally affects the life of the hardware.</p>
+<h2 id="Summary"><a href="#Summary" class="headerlink" title="Summary"></a>Summary</h2><p>In software engineering there is a very interesting phenomenon, do hardware and infrastructure engineers are desperately trying to optimize the performance of the system, but the application layer of engineers often do not care about the small differences in performance, and this is also the result of differences in job responsibilities, different positions determine the different concerns.</p>
+<p>The evolution and innovation of hardware deeply affect the design of upper-level software, and it is extremely difficult to design a universal system that does not take into account the characteristics of the underlying hardware when designing a file system, so it is impossible to take full advantage of the performance provided by the hardware and get the desired results. Here is a summary of two reasons why Linux and macOS do not require defragmentation.</p>
+<p>(a) The block allocation-based design of the file system makes the probability of fragmentation on the disk very low, and the delayed allocation and automatic defragmentation policy free the operating system user from the need to consider disk fragmentation in most cases.<br>the random read/write performance of SSDs is far better than that of mechanical drives, and while there are performance differences between random and sequential read/write, they are not as great as those of mechanical drives, while frequent defragmentation can also affect the life of an SSD.<br>At the end of the day, let’s look at some more open related questions, and interested readers can think carefully about the following questions, which, unlike the previous ones, will be answered by the authors in the following article.</p>
+<p>Why is there an upper limit on the number of erases for solid-state drives?<br>Under what conditions are mechanical hard drives more likely to be damaged?<br>If you have questions about the content of this article or want to learn more about the reasons behind some of the design decisions in software engineering, you can leave a comment below the blog and the author will promptly respond to any questions related to this article and select the appropriate topic for a follow-up.</p>
+<h2 id="Recommended-Reading"><a href="#Recommended-Reading" class="headerlink" title="Recommended Reading"></a>Recommended Reading</h2><p>《Why CPU access to hard drives is slow》<br>《Why HugePages can improve database performance》</p>
+<h2 id="References"><a href="#References" class="headerlink" title="References"></a>References</h2><p>Why early Windows needed defragmentation <a target="_blank" rel="noopener" href="https://draveness.me/whys-the-design-windows-defragmentation/%EF%B8%8E">https://draveness.me/whys-the-design-windows-defragmentation/︎</a></p>
+<p>Is there a tool to visualize a filesystem allocation map on Linux? <a target="_blank" rel="noopener" href="https://unix.stackexchange.com/questions/30743/is-there-a-tool-to-visualize">https://unix.stackexchange.com/questions/30743/is-there-a-tool-to-visualize</a> -a-filesystem-allocation-map-on-Linux ︎</p>
+<p>Wikipedia: Apple File System <a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Apple_File_System">https://en.wikipedia.org/wiki/Apple_File_System</a> ︎</p>
+<p>HFS+ and File System Fragmentation <a target="_blank" rel="noopener" href="https://developercoach.com/file-system-fragmentation/">https://developercoach.com/file-system-fragmentation/</a> ︎</p>
+
+
+<!--<a href="https://www.gtygo.com/2.html#disqus_thread" class="article-comment-link">Comments</a>
+<div id="disqus_thread"></div>
+<script type="text/javascript">
+    /* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
+    var disqus_shortname = ''; // required: replace example with your forum shortname
+
+    /* * * DON'T EDIT BELOW THIS LINE * * */
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a target="_blank" rel="noopener" href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+-->
+<div style="display:none">
+<script src="http://s4.cnzz.com/stat.php?id=&web_id=" language="JavaScript"></script>script>
+</div>
+
+
+
+
+
+
+</body>
+</html>

@@ -1,0 +1,164 @@
+<html>
+<head>
+	
+	<title>Talking about the problems and limitations of Kubernetes</title>
+	<meta name="keywords" content="information tech" />
+
+    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+    
+	   <link href="/css/main.css?v=3" rel="stylesheet" type="text/css" />
+    
+        
+<script src="/js/util.js"></script>
+
+        <script>
+            if(isMobile()) {
+                loadjscssfile('../css/mobile.css', 'css');
+            } else {
+                loadjscssfile('../css/desktop.css', 'css');
+            }
+        </script> 
+    
+
+    <link rel="alternate" type="application/atom+xml" href="/atom.xml" title="Atom feed">
+
+    
+	<link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=3"/>
+    
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-76SLJ1L5G2"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-76SLJ1L5G2');
+</script>
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-76SLJ1L5G2"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+
+        gtag('config', 'G-76SLJ1L5G2');
+    </script>
+    <script data-ad-client="ca-pub-8355064206464637" async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+
+<body>
+
+
+<h2 class="title">Talking about the problems and limitations of Kubernetes</h2>
+<!--
+<div style="text-align:center;margin-top: -10px;">
+<div class="article-category">
+发表于2021年9月1日
+
+
+
+
+ </div>
+-->
+</div>
+
+<ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#Talking-about-the-problems-and-limitations-of-Kubernetes"><span class="toc-text">Talking about the problems and limitations of Kubernetes</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#Cluster-Management"><span class="toc-text">Cluster Management</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Horizontal-Scalability"><span class="toc-text">Horizontal Scalability</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Multi-cluster-management"><span class="toc-text">Multi-cluster management</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#kubefed"><span class="toc-text">kubefed</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Cluster-Interface"><span class="toc-text">Cluster Interface</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Application-Scenarios"><span class="toc-text">Application Scenarios</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Application-Distribution"><span class="toc-text">Application Distribution</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Batch-Scheduling"><span class="toc-text">Batch Scheduling</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Conclusion"><span class="toc-text">Conclusion</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Reference"><span class="toc-text">Reference</span></a></li></ol></li></ol>
+<h1 id="Talking-about-the-problems-and-limitations-of-Kubernetes"><a href="#Talking-about-the-problems-and-limitations-of-Kubernetes" class="headerlink" title="Talking about the problems and limitations of Kubernetes"></a>Talking about the problems and limitations of Kubernetes</h1><p>Kubernetes, released in 2014, has become the de-facto standard in container orchestration today, and I’m sure developers who talk about Kubernetes will recount the phenomenon over and over again. As the chart below shows, most individuals or teams today choose Kubernetes to manage containers, and 75% of people use Kubernetes in production environments.</p>
+<p>In the context of this universal learning and use of Kubernetes, it should also be very clear what the limitations of Kubernetes are. Although Kubernetes can solve most of the problems in the container orchestration space, there are still some scenarios that it is difficult or even impossible to handle, and only with a clear understanding of these potential risks can we better navigate this technology.</p>
+<h2 id="Cluster-Management"><a href="#Cluster-Management" class="headerlink" title="Cluster Management"></a>Cluster Management</h2><p>A cluster is a group of computers that can work together. We can consider all the computers in a cluster as a whole, and all the resource scheduling systems are managed with the cluster as a dimension. Here we briefly discuss several complex issues facing Kubernetes cluster management.</p>
+<h3 id="Horizontal-Scalability"><a href="#Horizontal-Scalability" class="headerlink" title="Horizontal Scalability"></a>Horizontal Scalability</h3><p>Cluster size is one of the most important metrics we need to look at when evaluating resource management systems, yet Kubernetes can manage far smaller clusters than other resource management systems in the industry. Why cluster size is important? Let’s look at another equally important metric - resource utilization. Many engineers may not have requested resources on a public cloud platform, and these resources are quite expensive. RMB 2.</p>
+<p>Most clusters use 48 CPU or 64 CPU physical machines or VMs as nodes in the cluster, so if we need to have 5,000 nodes in our cluster, then these nodes would cost about $8,000,000 per month or about 50,000,000 RMB. 500,000 per month.</p>
+<p>Most online tasks have low resource utilization, and a larger cluster means that more workloads can be run, and multiple peaks and valleys of different loads can be deployed together to achieve overselling, which can significantly improve the resource utilization of the cluster. The Kubernetes community advertises this to the public.</p>
+<p>The Kubernetes community advertises to the public that a single cluster supports up to 5,000 nodes, no more than 150,000 total Pods, no more than 300,000 total containers, and no more than 100 single-node Pods.3 Compared to Apache Mesos clusters with tens of thousands of nodes and Microsoft YARN clusters with 50,000 nodes,4 The cluster size of Kubernetes is an order of magnitude worse. While Aliyun engineers have also achieved 5-digit cluster sizes by optimizing various components of Kubernetes, there is a relatively large gap compared to other resource management approaches5.</p>
+<p>It is important to note that while the Kubernetes community claims to support 5,000 nodes in a single cluster and has a variety of integration tests to ensure that every change does not affect its scalability6, Kubernetes is complex and there is no way to guarantee that every feature you use will not have problems during the scaling process. And in a production environment, we may even run into bottlenecks when the cluster scales to 1000 ~ 1500 nodes.</p>
+<p>Every large company of any size wants to implement a larger Kubernetes cluster, but this is not a simple problem that can be solved by changing a few lines of code, it may require us to limit the use of some features in Kubernetes, and problems may occur with etcd, API servers, schedulers, and controllers during the scaling process. Some developers in the community have noticed some of these issues, such as adding caching to nodes to reduce the load on API servers7, but it is still difficult to push for similar changes, and interested parties can try to push for similar projects in the community.</p>
+<h3 id="Multi-cluster-management"><a href="#Multi-cluster-management" class="headerlink" title="Multi-cluster management"></a>Multi-cluster management</h3><p>Even if a Kubernetes cluster could one day reach 50,000 nodes, we would still need to manage multiple clusters, and multicluster management is something the Kubernetes community is currently exploring. In the author’s opinion, multi-clustering in Kubernetes poses three major problems: resource imbalance, difficulty in accessing across clusters, and increased operational and management costs.</p>
+<h4 id="kubefed"><a href="#kubefed" class="headerlink" title="kubefed"></a>kubefed</h4><p>The first is tube fed, a solution from the Kubernetes community that provides both cross-cluster resource and network management, developed by the community’s SIG Multi-Cluster interest group.</p>
+<p>tube-fed manages metadata in a multicluster through a centralized federation console. The upper-level console creates corresponding federation objects for the resources in the manager cluster, e.g. FederatedDeployment.</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line">kind: FederatedDeployment</span><br><span class="line">...</span><br><span class="line">spec:</span><br><span class="line">  ...</span><br><span class="line">  overrides:</span><br><span class="line">  # Apply overrides to cluster1</span><br><span class="line">    - clusterName: cluster1</span><br><span class="line">      clusterOverrides:</span><br><span class="line">        # Set the replicas field to 5</span><br><span class="line">        - path: &quot;/spec/replicas&quot;</span><br><span class="line">          value: 5</span><br><span class="line">        # Set the image of the first container</span><br><span class="line">        - path: &quot;/spec/template/spec/containers/0/image&quot;</span><br><span class="line">          value: &quot;nginx:1.17.0-alpine&quot;</span><br><span class="line">        # Ensure the annotation &quot;foo: bar&quot; exists</span><br><span class="line">        - path: &quot;/metadata/annotations&quot;</span><br><span class="line">          op: &quot;add&quot;</span><br><span class="line">          value:</span><br><span class="line">            foo: bar</span><br><span class="line">        # Ensure an annotation with key &quot;foo&quot; does not exist</span><br><span class="line">        - path: &quot;/metadata/annotations/foo&quot;</span><br><span class="line">          op: &quot;remove&quot;</span><br><span class="line">        # Adds an argument `-q` at index 0 of the args list</span><br><span class="line">        # this will obviously shift the existing arguments, if any</span><br><span class="line">        - path: &quot;/spec/template/spec/containers/0/args/0&quot;</span><br><span class="line">          op: &quot;add&quot;</span><br><span class="line">          value: &quot;-q&quot;</span><br></pre></td></tr></table></figure>
+<p>The upper control panel generates the corresponding Deployment based on the FederatedDeployment specification file and pushes it to the lower cluster, which can normally create a specific number of replicas based on the definition in the Deployment.</p>
+<p>FederatedDeployment is only the simplest distribution strategy. In production environments where we want to implement complex features such as disaster recovery through federated clusters, we can use ReplicaSchedulingPreference to implement a more intelligent distribution strategy across clusters.</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">apiVersion: scheduling.kubefed.io/v1alpha1</span><br><span class="line">kind: ReplicaSchedulingPreference</span><br><span class="line">metadata:</span><br><span class="line">  name: test-deployment</span><br><span class="line">  namespace: test-ns</span><br><span class="line">spec:</span><br><span class="line">  targetKind: FederatedDeployment</span><br><span class="line">  totalReplicas: 9</span><br><span class="line">  clusters:</span><br><span class="line">    A:</span><br><span class="line">      minReplicas: 4</span><br><span class="line">      maxReplicas: 6</span><br><span class="line">      weight: 1</span><br><span class="line">    B:</span><br><span class="line">      minReplicas: 4</span><br><span class="line">      maxReplicas: 8</span><br><span class="line">      weight: 2</span><br></pre></td></tr></table></figure>
+<p>The above scheduling strategy allows workloads to be weighted across clusters, and instances to be migrated to other clusters when they are under-resourced or even have problems, which improves the flexibility and availability of service deployment and allows infrastructure engineers to better balance the load across multiple clusters.</p>
+<p>We can consider the main role of tube feeding to be to form multiple loosely-coupled federated clusters and to provide more advanced networking and deployment capabilities so that we can more easily address some of the resource imbalance and connectivity issues between clusters, however, the focus of this project does not include cluster lifecycle management.</p>
+<h2 id="Cluster-Interface"><a href="#Cluster-Interface" class="headerlink" title="Cluster Interface"></a>Cluster Interface</h2><p>The Cluster API is also a multicluster management-related project in the Kubernetes community, developed by the SIG Cluster-Lifecycle group, whose main goal is to simplify the preparation, update, and maintenance of multi clusters through a declarative API, whose scope of responsibility you can find in the project’s design proposal9. You can find its terms of reference in the project’s design proposal9.</p>
+<p>The most important resource in this project is the Machine, which represents the nodes in a Kubernetes cluster. When this resource is created, the provider-specific controller initializes and registers the new node into the cluster based on the definition of the machine, and also performs operations to reach the user’s state when the resource is updated or deleted.</p>
+<p>This strategy is somewhat similar to Ali’s approach to multi-cluster management in that they both use declarative APIs to define the state of machines and clusters, and then use Kubernetes’ native Operator model to manage lower-level clusters in higher-level clusters, which can greatly reduce the cost of cluster operations and improve the operational efficiency of clusters10, although similar projects do not consider cross-cluster However, similar projects do not consider cross-cluster resource management and network management.</p>
+<h3 id="Application-Scenarios"><a href="#Application-Scenarios" class="headerlink" title="Application Scenarios"></a>Application Scenarios</h3><p>In this section, we talk about some interesting application scenarios in Kubernetes, including the current state of application distribution, batch scheduling tasks, and hard multi-tenancy support in clusters, which are of interest to the community and are currently a blind spot in Kubernetes.</p>
+<h3 id="Application-Distribution"><a href="#Application-Distribution" class="headerlink" title="Application Distribution"></a>Application Distribution</h3><p>The main Kubernetes project provides several minimal ways to deploy applications, namely Deployment, StatefulSet, and DaemonSet. These resources are for stateless services, stateful services, and daemons on nodes, respectively, and they provide the most basic policies, but they cannot handle more complex applications.</p>
+<p>With the introduction of CRD, the community’s application management group (SIG Apps) now largely refrains from introducing large changes to the Kubernetes master repository. Most changes are patches on existing resources, and many common scenarios, such as the once-only DaemonSet11 and features such as Canary and Bluegreen deployments, have many issues with the resources now. For example, StatefulSet is stuck in the initialization container and cannot be rolled back and updated12.<br>Understandably, the community does not want to maintain more basic resources in Kubernetes, as a few basic resources can cover 90% of the scenarios, leaving the rest of the complex scenarios for other communities to implement by way of CRD. However, the authors believe that if the community can implement more high-quality components upstream, this is a valuable and important work for the whole ecosystem, and it should be noted that if you want to be a contributor in the Kubernetes project, SIG Apps may not be a good choice.</p>
+<h3 id="Batch-Scheduling"><a href="#Batch-Scheduling" class="headerlink" title="Batch Scheduling"></a>Batch Scheduling</h3><p>Running workloads such as machine learning, batch tasks, and streaming tasks have not been Kubernetes’ forte since day one, and most companies use Kubernetes to run online services to handle user requests and Yarn-managed clusters to run batch loads.</p>
+<p>Most online tasks are stateless services that can be migrated across machines and have very strong dependencies on each other; however, many offline tasks have complex topologies, with some tasks requiring multiple jobs to execute together and some tasks requiring sequential execution according to dependencies.</p>
+<p>Before the Kubernetes scheduler introduced the scheduling framework, all Pods were unrelated to the scheduler, but with the scheduling framework, we can implement more complex scheduling policies in the scheduling system, such as PodGroup13 that guarantees simultaneous scheduling of a group of Pods, which is useful for Spark and TensorFlow tasks.</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"># PodGroup CRD spec</span><br><span class="line">apiVersion: scheduling.sigs.k8s.io/v1alpha1</span><br><span class="line">kind: PodGroup</span><br><span class="line">metadata:</span><br><span class="line">  name: nginx</span><br><span class="line">spec:</span><br><span class="line">  scheduleTimeoutSeconds: 10</span><br><span class="line">  minMember: 3</span><br><span class="line">minMember: 3 ---</span><br><span class="line"># Add a label `pod-group.scheduling.sigs.k8s.io` to mark the pod belongs to a group</span><br><span class="line">labels:</span><br><span class="line">  pod-group.scheduling.sigs.k8s.io: nginx</span><br></pre></td></tr></table></figure>
+
+<p>A volcano is also a batch task management system built on Kubernetes14 that can handle machine learning, deep learning, and other big data applications, supporting multiple frameworks including TensorFlow, Spark, PyTorch, and MPI.</p>
+<p>While Kubernetes can run some batch tasks, it is still very far from replacing older resource management systems such as Yarn in this space, and it is believed that most companies will maintain both Kubernetes and Yarn technology stacks to manage and run different types of workloads for a longer period.</p>
+<p>Hard Multi-Tenancy<br>Multi-tenancy means that the same software instance can serve different groups of users. Multi-tenancy in Kubernetes means that multiple users or groups of users use the same Kubernetes cluster, and today it is difficult to achieve hard multi-tenancy support, which means that multiple tenants in the same cluster do not affect each other and are not aware of each other’s presence.</p>
+<p>Hard multi-tenancy is a very important and difficult topic in Kubernetes. A typical multi-tenant scenario is a shared apartment, where multiple tenants share the infrastructure of the house, and hard multi-tenancy requires that multiple visitors do not affect each other.</p>
+<p>Although Kubernetes uses namespaces to divide groups of VMs, it is difficult to achieve true multi-tenancy. Here is a brief list of the benefits of multi-tenancy support.</p>
+<p>The additional deployment costs associated with Kubernetes are prohibitive for small clusters; stable Kubernetes clusters typically require at least three master nodes running etcd, and if most clusters are small, these additional machines can introduce a high level of additional overhead.<br>containers running in Kubernetes may need to share physical and virtual machines, and some developers may have experienced their services being impacted by other operations within their companies because the containers on the host may isolate CPU and memory resources, but not resources such as I/O, network and CPU cache, which is relatively difficult to isolate.<br>If Kubernetes can achieve hard multi-tenancy, it will not only be a boon for cloud providers and users of small clusters, but it can also isolate the impact between different containers and prevent potential security issues, but this is still difficult to achieve at this stage.</p>
+<h2 id="Conclusion"><a href="#Conclusion" class="headerlink" title="Conclusion"></a>Conclusion</h2><p>Every technology has its lifecycle, the lower the technology lifecycle will be longer, and the higher the technology lifecycle will be shorter, although Kubernetes is the leader of a today’s container world, no one can say the future of things. We should always be aware of the strengths and weaknesses of the tools at hand, spend some time learning the essence of the design in Kubernetes, but if at some point in the future Kubernetes becomes a thing of the past, we should be happy that a better tool will replace it.</p>
+<h2 id="Reference"><a href="#Reference" class="headerlink" title="Reference"></a>Reference</h2><ol>
+<li><p>Kubernetes and Container Security and Adoption Trends <a target="_blank" rel="noopener" href="https://www.stackrox.com/kubernetes-adoption-security-and-market-share-for-">https://www.stackrox.com/kubernetes-adoption-security-and-market-share-for-</a> containers/︎</p>
+</li>
+<li><p>AWS Pricing Calculator <a target="_blank" rel="noopener" href="https://calculator.aws/#/createCalculator/EC2">https://calculator.aws/#/createCalculator/EC2</a> ︎</p>
+</li>
+<li><p>Considerations for large clusters <a target="_blank" rel="noopener" href="https://kubernetes.io/docs/setup/best-practices/cluster-large/">https://kubernetes.io/docs/setup/best-practices/cluster-large/</a> ︎</p>
+</li>
+<li><p>How Microsoft drives exabyte analytics on the world’s largest YARN cluster <a target="_blank" rel="noopener" href="https://azure.microsoft.com/en-us/blog/how-microsoft-">https://azure.microsoft.com/en-us/blog/how-microsoft-</a> drives-exabyte-analytics-on-the-world-s-largest-yarn-cluster/ ︎</p>
+</li>
+<li><p>How to design a 10,000 scale K8s cluster management system for Anthem? <a target="_blank" rel="noopener" href="https://www.sofastack.tech/blog/ant-financial-managing-large-scale-kubernetes-clusters/">https://www.sofastack.tech/blog/ant-financial-managing-large-scale-kubernetes-clusters/</a> ︎</p>
+</li>
+<li><p>sig-scalability-kubemark dashboard <a target="_blank" rel="noopener" href="https://testgrid.k8s.io/sig-scalability-kubemark#kubemark-5000">https://testgrid.k8s.io/sig-scalability-kubemark#kubemark-5000</a> ︎</p>
+</li>
+<li><p>Node-local API cache #84248 <a target="_blank" rel="noopener" href="https://github.com/kubernetes/kubernetes/issues/84248">https://github.com/kubernetes/kubernetes/issues/84248</a> ︎</p>
+</li>
+<li><p>Multicluster Special Interest Group <a target="_blank" rel="noopener" href="https://github.com/kubernetes/community/tree/master/sig-multicluster">https://github.com/kubernetes/community/tree/master/sig-multicluster</a> ︎</p>
+</li>
+<li><p>Cluster API Scope and Objectives <a target="_blank" rel="noopener" href="https://github.com/kubernetes-sigs/cluster-api/blob/master/docs/scope-and-objectives.md">https://github.com/kubernetes-sigs/cluster-api/blob/master/docs/scope-and-objectives.md</a> ︎</p>
+</li>
+<li><p>Demystifying Kubernetes as a service - How Alibaba cloud manages 10,000s of Kubernetes clusters <a target="_blank" rel="noopener" href="https://www.cncf.io/blog/2019/12/12/">https://www.cncf.io/blog/2019/12/12/</a> demystifying-Kubernetes-as-a-service-how-does-Alibaba-cloud-manage-10,000s-of-Kubernetes-clusters/︎</p>
+</li>
+<li><p>Run job on each node once to help with setup #64623 <a target="_blank" rel="noopener" href="https://github.com/kubernetes/kubernetes/issues/64623">https://github.com/kubernetes/kubernetes/issues/64623</a> ︎</p>
+</li>
+<li><p>StatefulSet does not upgrade to a newer version of manifests #78007 <a target="_blank" rel="noopener" href="https://github.com/kubernetes/kubernetes/issues/78007">https://github.com/kubernetes/kubernetes/issues/78007</a> ︎</p>
+</li>
+<li><p>So scheduling based on PodGroup CRD <a target="_blank" rel="noopener" href="https://github.com/kubernetes-sigs/scheduler-plugins/tree/master/kep/42-podgroup-coscheduling">https://github.com/kubernetes-sigs/scheduler-plugins/tree/master/kep/42-podgroup-coscheduling</a> ︎</p>
+</li>
+<li><p>Volcano - A Kubernetes Native Batch System <a target="_blank" rel="noopener" href="https://github.com/volcano-sh/volcano">https://github.com/volcano-sh/volcano</a> ︎</p>
+</li>
+<li><p>Kubernetes Working Group for Multi-Tenancy <a target="_blank" rel="noopener" href="https://github.com/kubernetes-sigs/multi-tenancy">https://github.com/kubernetes-sigs/multi-tenancy</a> ︎</p>
+</li>
+</ol>
+
+
+<!--<a href="https://www.gtygo.com/1.html#disqus_thread" class="article-comment-link">Comments</a>
+<div id="disqus_thread"></div>
+<script type="text/javascript">
+    /* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
+    var disqus_shortname = ''; // required: replace example with your forum shortname
+
+    /* * * DON'T EDIT BELOW THIS LINE * * */
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a target="_blank" rel="noopener" href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+-->
+<div style="display:none">
+<script src="http://s4.cnzz.com/stat.php?id=&web_id=" language="JavaScript"></script>script>
+</div>
+
+
+
+
+
+
+</body>
+</html>

@@ -1,0 +1,118 @@
+<html>
+<head>
+	
+	<title>Why CPU access to hard disk is slow？</title>
+	<meta name="keywords" content="information tech" />
+
+    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+    
+	   <link href="/css/main.css?v=3" rel="stylesheet" type="text/css" />
+    
+        
+<script src="/js/util.js"></script>
+
+        <script>
+            if(isMobile()) {
+                loadjscssfile('../css/mobile.css', 'css');
+            } else {
+                loadjscssfile('../css/desktop.css', 'css');
+            }
+        </script> 
+    
+
+    <link rel="alternate" type="application/atom+xml" href="/atom.xml" title="Atom feed">
+
+    
+	<link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=3"/>
+    
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-76SLJ1L5G2"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-76SLJ1L5G2');
+</script>
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-76SLJ1L5G2"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+
+        gtag('config', 'G-76SLJ1L5G2');
+    </script>
+    <script data-ad-client="ca-pub-8355064206464637" async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+
+<body>
+
+
+<h2 class="title">Why CPU access to hard disk is slow？</h2>
+<!--
+<div style="text-align:center;margin-top: -10px;">
+<div class="article-category">
+发表于2021年9月1日
+
+
+
+
+ </div>
+-->
+</div>
+
+<ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#Why-CPU-access-to-hard-disk-is-slow"><span class="toc-text">Why CPU access to hard disk is slow</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#I-O-operations"><span class="toc-text">I&#x2F;O operations</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Mechanical-Hard-Disk-Drive"><span class="toc-text">Mechanical Hard Disk Drive</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Summary"><span class="toc-text">Summary</span></a></li></ol></li></ol>
+<h1 id="Why-CPU-access-to-hard-disk-is-slow"><a href="#Why-CPU-access-to-hard-disk-is-slow" class="headerlink" title="Why CPU access to hard disk is slow"></a>Why CPU access to hard disk is slow</h1><p>Mechanical Hard Disk Drives (HDD) and Solid State Drives (SSD) are the two most common types of hard disks used as external storage for computers, and it takes a long time for the CPU to access the data they store, as shown in the table below, where it takes 1,500 times longer to access a random 4KB of data in an SSD than it does to access the main memory. The seek time for a mechanical disk is 100,000 times longer than accessing the main memory.</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">Work Latency</span><br><span class="line">L1 cache reference 0.5 ns</span><br><span class="line">Branch mispredict 5 ns</span><br><span class="line">L2 cache reference 7 ns</span><br><span class="line">Mutex lock/unlock 25 ns</span><br><span class="line">Main memory reference 100 ns</span><br><span class="line">Compress 1K bytes with Zippy 3,000 ns</span><br><span class="line">Send 1K bytes over 1 Gbps network 10,000 ns</span><br><span class="line">Read 4K randomly from SSD* 150,000 ns</span><br><span class="line">Read 1 MB sequentially from memory 250,000 ns</span><br><span class="line">Round trip within same datacenter 500,000 ns</span><br><span class="line">Read 1 MB sequentially from SSD* 1,000,000 ns</span><br><span class="line">Disk seek 10,000,000 ns</span><br><span class="line">Read 1 MB sequentially from disk 20,000,000 ns</span><br><span class="line">Send packet CA-&gt;Netherlands-&gt;CA 150,000,000 ns</span><br></pre></td></tr></table></figure>
+
+<p>Although the seek time of the disk takes only 10ms, it seems to be a very long time for the CPU, and when we scale the above times equally, we can visualize the difference in performance. If the CPU takes 1 second to access the L1 cache, it takes 3 minutes to access the main memory, 3.4 days to read random data from the SSD, 2 months for disk seek, and possibly over a year for network transfers.</p>
+<p>In computer architecture, the hard disk is a common input and output device, and the operating system does not necessarily need a hard disk to boot; it can be booted from the hard disk, from a network device, or an external device, so the hard disk is not necessary for the computer to run.</p>
+<p>As an external input/output device, the extremely slow read and write speeds of hard disks make sense compared to CPU cache and memory, but the difference in speed of thousands or even hundreds of thousands of times can be hard to imagine or accept, and in this article we will analyze why CPU access to hard disks is so slow.</p>
+<p>CPU access to hard disk data is a complex process, it will first read the data in the disk into memory through I/O operations, and then access the data in memory.<br>mechanical hard disks rely on a mechanical structure to access the data in the disk, which requires moving the mechanical arms in the disk.</p>
+<h2 id="I-O-operations"><a href="#I-O-operations" class="headerlink" title="I/O operations"></a>I/O operations</h2><p>The CPU that wants to access the data on the disk must first read the data on the disk into memory through I/O operations and then access the data stored in memory. Computers contain three relatively common I/O operations2 - Programmed I/O, Interrupt-driven I/O, and Direct Memory Access - which we will describe in turn3.</p>
+<p>If we want to output Hello World on the screen, the CPU will write a new character to the I/O device each time, and after writing it, it will poll the state of the device and wait for it to finish its work before writing a new character. This approach is simple, but it takes up all the CPU resources, which can cause a serious waste of computing resources in some complex systems.</p>
+<p>Interrupt-driven I/O is a more efficient way to perform I/O operations. In programmed I/O, the CPU actively obtains the state of the device and waits for it to become idle, but with interrupt-driven I/O, the device initiates an interrupt to suspend the current process and save the context while the OS executes the I/O device’s interrupt handler.</p>
+<p>If the current does not contain the character to be printed, stop the interrupt handler and resume the suspended process.<br>if the current contains the character to be printed, copies the next character to the device and resumes the paused process.<br>Using interrupt-driven I/O allows the CPU to handle other tasks when the device is busy, maximizing CPU utilization and eliminating the waste of precious computing resources. Compared to programmed I/O, interrupt-driven I/O gives a portion of the work to the I/O device and therefore improves resource utilization.</p>
+<p>Direct memory accesses use a DMA controller to perform I/O operations, while interrupt-driven I/O requires an OS interrupt to be triggered for each character, which consumes a certain amount of CPU time. When we use a DMA controller, the CPU reads all the data in the buffer to the DMA controller at once, and the DMA controller is responsible for writing the data to the I/O device on a character-by-character basis: the</p>
+<p>Although the DMA controller frees up the CPU and reduces the number of interrupts, its execution speed is slow compared to the CPU, and if the DMA controller cannot drive the I/O device fast enough, the CPU may wait for the DMA controller to trigger an interrupt, in which case interrupt-driven I/O or programmed I/O can provide faster access.</p>
+<p>By default, we use the DMA controller to perform I/O tasks but programmed I/O and interrupt-driven I/O are not unacceptable options. When the CPU often has to wait for the DMA controller to perform I/O tasks, using interrupt-driven I/O or even polled programmed I/O can provide higher throughput, but either way, I/O is a more time-consuming and complex operation in the program.</p>
+<h2 id="Mechanical-Hard-Disk-Drive"><a href="#Mechanical-Hard-Disk-Drive" class="headerlink" title="Mechanical Hard Disk Drive"></a>Mechanical Hard Disk Drive</h2><p>A mechanical hard disk drive (Hard Disk Drive, HDD) is an electronic-based, non-volatile mechanical data storage device that uses magnetic memory to store and find data on the disk, and in the process of reading and writing data, the head attached to the mechanical arm of the drive reads and writes bits on the surface of the disk4.</p>
+<p>It is because the disk has a relatively complex mechanical structure, so the disk takes a lot of time to read and write, and the read and write performance of the database is dependent on the performance of the disk, if we query a random piece of data in a database using a mechanical hard disk, this may trigger random I/O on the disk, however, the cost required to read the data from the disk into memory is very large, and ordinary disks (not A normal disk (not SSD) needs to go through the process of queuing, seeking, spinning, and transferring, which takes about 10ms to load the data.</p>
+<p>When estimating database queries, we can use the 10ms order of magnitude to estimate the time taken by random I/O. The point here is that random I/O can have a significant impact on database query performance, while sequential reads of data from disk can reach 40MB/s. The performance gap between the two is several orders of magnitude, so we should also try to reduce the number of random I/Os as much as possible to improve performance. This will improve performance.</p>
+<p>Solid State Drive (SSD) is a computer storage device that uses flash memory as persistent memory.5 Unlike mechanical hard drives, SSDs do not contain any mechanical structure, and we use them to read or store data without using any mechanical structure because everything is done by circuitry, so SSDs can read and write much faster than HDDs Therefore, SSDs can read and write much faster than HDDs.</p>
+<p>Both mechanical HDDs and SSDs have been decreasing in price since their inception. Mechanical HDDs are the primary external storage used in data centers today, and most general-purpose commercial servers use mechanical HDDs as their primary external storage, but because SSDs can read and write at speeds tens of times faster than mechanical HDDs, more and more servers, especially databases, are using SSDs as external storage. However, as an external storage device with a mechanical structure, it is very mature and has a large capacity, but it is susceptible to external interference when subjected to vibration.</p>
+<h2 id="Summary"><a href="#Summary" class="headerlink" title="Summary"></a>Summary</h2><p>The hard drive is an external storage device on the computer that can store a large amount of data persistently, however, the CPU cannot access the data on the hard drive directly. two reasons.</p>
+<p>The CPU needs to access data in external storage through I/O operations, and several methods - programmed I/O, interrupt-driven I/O, and DMA - all introduce additional overhead and take up more CPU time.<br>Mechanical hard drives access the data stored in them through mechanical structures, and each random I/O of the drive requires several processes of queuing, seeking, spinning, and transferring data, consuming about 10ms of time.<br>As we mentioned in the article, hard disks are not a necessary hardware device for computer operation, computers can load the data needed for booting into memory from any external storage device such as disks, CDs, etc. and boot normally, but hard disks are already the most common external storage device today. At the end of the day, let’s look at some of the more open related issues, and the interested reader can think carefully about the following questions.</p>
+<p>Must data are written to a hard drive be stored persistently and not lost?<br>Why is data in memory cleared after a power failure and reboot?<br>If you have questions about the content of the article or want to learn more about the reasons behind some design decisions in software engineering, you can leave a comment below the blog, the author will promptly reply to the questions related to this article and select the appropriate topic as the follow-up content.</p>
+
+
+<!--<a href="https://www.gtygo.com/3.html#disqus_thread" class="article-comment-link">Comments</a>
+<div id="disqus_thread"></div>
+<script type="text/javascript">
+    /* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
+    var disqus_shortname = ''; // required: replace example with your forum shortname
+
+    /* * * DON'T EDIT BELOW THIS LINE * * */
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a target="_blank" rel="noopener" href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+-->
+<div style="display:none">
+<script src="http://s4.cnzz.com/stat.php?id=&web_id=" language="JavaScript"></script>script>
+</div>
+
+
+
+
+
+
+</body>
+</html>

@@ -1,0 +1,114 @@
+<html>
+<head>
+	
+	<title>Why is the default page size of Linux 4KB?</title>
+	<meta name="keywords" content="information tech" />
+
+    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+    
+	   <link href="/css/main.css?v=3" rel="stylesheet" type="text/css" />
+    
+        
+<script src="/js/util.js"></script>
+
+        <script>
+            if(isMobile()) {
+                loadjscssfile('../css/mobile.css', 'css');
+            } else {
+                loadjscssfile('../css/desktop.css', 'css');
+            }
+        </script> 
+    
+
+    <link rel="alternate" type="application/atom+xml" href="/atom.xml" title="Atom feed">
+
+    
+	<link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=3"/>
+    
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-76SLJ1L5G2"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-76SLJ1L5G2');
+</script>
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-76SLJ1L5G2"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+
+        gtag('config', 'G-76SLJ1L5G2');
+    </script>
+    <script data-ad-client="ca-pub-8355064206464637" async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+
+<body>
+
+
+<h2 class="title">Why is the default page size of Linux 4KB?</h2>
+<!--
+<div style="text-align:center;margin-top: -10px;">
+<div class="article-category">
+发表于2021年9月1日
+
+
+
+
+ </div>
+-->
+</div>
+
+<ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#Why-is-the-default-page-size-of-Linux-4KB"><span class="toc-text">Why is the default page size of Linux 4KB?</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#Page-table-entries"><span class="toc-text">Page table entries</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Fragmentation"><span class="toc-text">Fragmentation</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Summary"><span class="toc-text">Summary</span></a></li></ol></li></ol>
+<h1 id="Why-is-the-default-page-size-of-Linux-4KB"><a href="#Why-is-the-default-page-size-of-Linux-4KB" class="headerlink" title="Why is the default page size of Linux 4KB?"></a>Why is the default page size of Linux 4KB?</h1><p>We all know that Linux manages memory in pages. Whether it is loading data from disk into memory or writing data from memory back to disk, the operating system operates in pages. Even if we write only one byte of data to disk, we need to swipe the entire data from the entire page to disk.</p>
+<p>Linux supports both normal-sized memory pages and large memory pages (Huge Page).1 The default size of memory pages on most processors is 4KB, and although some processors use 8KB, 16KB, or 64KB as the default page size, 4KB pages are still the mainstream of the operating system’s default memory page configuration; in addition to the normal memory page size, different processors also contain different sizes of pages. In addition to the normal memory page size, different processors also contain large pages of different sizes; we can use a 2MB page on an x86 processor.</p>
+<p>The 4KB memory page is a historical legacy, having been established in the 1980s and remaining in place until today. Although today’s hardware is much richer than in the past, we still use the prevailing memory page size. The following diagram will be familiar to anyone who has ever installed a machine with a memory stick.</p>
+<p>In today’s world, a 4KB memory page size may not be the best choice, and 8KB or 16KB may be a better choice, but this is a tradeoff that was made in the past for specific scenarios. Instead of getting too hung up on the 4KB number in this article, we should pay more attention to several factors that determine this outcome so that when we encounter similar scenarios we can consider the best choice for the moment in terms of these aspects, and in this article, we will cover the following two factors that affect memory page size, which are.</p>
+<p>(a) Too small a page size can result in larger page table entries increasing the TLB (Translation lookaside buffer) lookup time and additional overhead when addressing.<br>excessive page size wastes memory space causes memory fragmentation and reduces memory utilization.<br>The above two factors were fully considered when designing memory page sizes in the last century, and a 4KB memory page was finally chosen as the most common page size for operating systems. We will then detail their impact on operating system performance as described above.</p>
+<h2 id="Page-table-entries"><a href="#Page-table-entries" class="headerlink" title="Page table entries"></a>Page table entries</h2><p>We introduced virtual memory in Linux in the article Why Linux Needs Virtual Memory. Each process can see a separate virtual memory space, which is only a logical concept.</p>
+<p>To store 128 TiB virtual memory mapping data in 64-bit operating systems, Linux introduced four-level page-tables in 2.6.10 to assist in virtual address translation2 and five-level page-tables in 4.11.3 In the future, more levels of page-tables may be introduced to support 64-bit virtual addresses.</p>
+<p>In the four-level page-table structure shown above, the operating system uses the lowest 12 bits as the page offset, and the remaining 36 bits are divided into four groups to indicate the index of the current level in the previous level, and all virtual addresses can be found using the above-mentioned multi-level page-tables to the corresponding physical address4.</p>
+<p>Because the size of the virtual address space of the operating system is certain, the whole virtual address space is evenly divided into N memory pages of the same size, so the size of the memory pages will eventually determine the hierarchical structure and the specific number of page table entries in each process, and the smaller the size of the virtual pages, the more page table entries and virtual pages in a single process.</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">𝑃𝑎𝑔𝑒𝑠𝐶𝑜𝑢𝑛𝑡=𝑉𝑖𝑟𝑡𝑢𝑎𝑙𝑀𝑒𝑚𝑜𝑟𝑦/𝑃𝑎𝑔𝑒𝑆𝑖𝑧𝑒</span><br></pre></td></tr></table></figure>
+<p>Since the current virtual page size is 4096 bytes, the 12 bits at the end of the virtual address can represent the address in the virtual page. If the virtual page size is reduced to 512 bytes, the original four-level page table structure or five-level page table structure will become five or six levels, which will not only increase the additional overhead of memory access but also increase the memory size occupied by page table entries in each process.</p>
+<h2 id="Fragmentation"><a href="#Fragmentation" class="headerlink" title="Fragmentation"></a>Fragmentation</h2><p>Because memory mapping devices work at the level of memory pages, the operating system considers the smallest unit of memory allocation to be a virtual page. Even if a user program requests just 1 byte of memory, the OS will request a virtual page for it, as shown below. If the memory page size is 24KB, then requesting 1 byte of memory will waste ~99.9939% of the space.</p>
+<p>As memory page size increases, memory fragmentation becomes more severe. Smaller memory pages reduce memory fragmentation in memory space and improve memory utilization. In the last century memory resources were not as abundant as they are today, and in most cases, memory was not a limiting resource for programs to run, and most online services required more CPU than more memory. However, in the last century memory was a scarce resource, so improving the utilization of scarce resources was something we had to consider: the</p>
+<p>While memory sticks in the 1980s and 1990s were only 512KB or 2MB and were ridiculously expensive, several gigabytes of memory are common today.5 So while memory utilization is still very important, fragmented memory is no longer a critical issue to address today as memory prices have dropped dramatically.</p>
+<p>In addition to memory utilization, larger memory pages add additional overhead to memory copying because of the write-time copy mechanism on Linux. When multiple processes share the same block of memory, a copy of the memory page is triggered when one of the processes modifies the shared virtual memory, and the smaller the OS memory page, the smaller the additional overhead from write-time copying.</p>
+<h2 id="Summary"><a href="#Summary" class="headerlink" title="Summary"></a>Summary</h2><p>As we mentioned above, the 4KB memory page was the default setting decided in the last century, and from today’s perspective, this is probably the wrong choice, as architectures such as arm64 and ia64 can already support memory pages of 8KB, 16KB, etc. As memory prices become lower and system memory becomes larger, larger memory may be a better choice for the OS. choice, let’s revisit two elements that determine the size of a memory page.</p>
+<p>(a) A page size that is too small introduces larger page table entries increasing lookup time and additional overhead in the TLB (Translation lookaside buffer) during addressing, but also reducing memory fragmentation in the program and improving memory utilization.<br>(b) Excessive page size wastes memory space, causes memory fragmentation, and reduces memory utilization, but reduces page table entries in the process and the addressing time of the TLB.<br>A similar scenario is also more common when we do system design. To take a not particularly appropriate example, when we want to deploy services on a cluster, the resources on each node are limited and the resources occupied by a single service may affect the resource utilization of the cluster or the additional overhead of the system. If we deploy 32 services with 1 CPU in the cluster, then we can fully utilize the resources in the cluster, but such a large number of instances will result in a large additional overhead; if we deploy 4 services with 8 CPUs in the cluster, then the additional overhead of these services, although small, may leave a lot of gaps in the nodes. To conclude, let’s look at some of the more open related issues, and the interested reader can think carefully about the following questions.</p>
+<p>What are the differences and connections between sectors, blocks, and pages in Linux?<br>How is the size of a block determined in Linux? What are the common sizes?<br>If you have questions about the content of this article or want to know more about the reasons behind some design decisions in software engineering, you can leave a comment below the blog, and the author will promptly reply to any questions related to this article and select the appropriate topic for follow-up.</p>
+
+
+<!--<a href="https://www.gtygo.com/4.html#disqus_thread" class="article-comment-link">Comments</a>
+<div id="disqus_thread"></div>
+<script type="text/javascript">
+    /* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
+    var disqus_shortname = ''; // required: replace example with your forum shortname
+
+    /* * * DON'T EDIT BELOW THIS LINE * * */
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a target="_blank" rel="noopener" href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+-->
+<div style="display:none">
+<script src="http://s4.cnzz.com/stat.php?id=&web_id=" language="JavaScript"></script>script>
+</div>
+
+
+
+
+
+
+</body>
+</html>
