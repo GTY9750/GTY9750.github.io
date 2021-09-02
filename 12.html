@@ -1,0 +1,130 @@
+<html>
+<head>
+	
+	<title>Why You Should Use Git for Version Control?</title>
+	<meta name="keywords" content="information tech" />
+
+    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+    
+	   <link href="/css/main.css?v=3" rel="stylesheet" type="text/css" />
+    
+        
+<script src="/js/util.js"></script>
+
+        <script>
+            if(isMobile()) {
+                loadjscssfile('../css/mobile.css', 'css');
+            } else {
+                loadjscssfile('../css/desktop.css', 'css');
+            }
+        </script> 
+    
+
+    <link rel="alternate" type="application/atom+xml" href="/atom.xml" title="Atom feed">
+
+    
+	<link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=3"/>
+    
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-76SLJ1L5G2"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-76SLJ1L5G2');
+</script>
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-76SLJ1L5G2"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+
+        gtag('config', 'G-76SLJ1L5G2');
+    </script>
+    <script data-ad-client="ca-pub-8355064206464637" async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+
+<body>
+
+
+<h2 class="title">Why You Should Use Git for Version Control?</h2>
+<!--
+<div style="text-align:center;margin-top: -10px;">
+<div class="article-category">
+发表于2021年9月2日
+
+
+
+
+ </div>
+-->
+</div>
+
+<ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#Why-You-Should-Use-Git-for-Version-Control"><span class="toc-text">Why You Should Use Git for Version Control?</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#Overview"><span class="toc-text">Overview</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Design"><span class="toc-text">Design</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Distributed"><span class="toc-text">Distributed</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Performance"><span class="toc-text">Performance</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Reliability"><span class="toc-text">Reliability</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Summary"><span class="toc-text">Summary</span></a></li></ol></li></ol>
+<h1 id="Why-You-Should-Use-Git-for-Version-Control"><a href="#Why-You-Should-Use-Git-for-Version-Control" class="headerlink" title="Why You Should Use Git for Version Control?"></a>Why You Should Use Git for Version Control?</h1><p>Git, the version control system developed by Linus in 2005, has evolved into the most popular and advanced open-source version control tool, but there are still a lot of companies and teams that still use SVN or CVS to version control their projects, and some companies do have some valid reasons for maintaining the status quo, but Git makes our development and collaboration more efficient in most scenarios.</p>
+<p>There have been many articles and discussions about Git versus other version control tools for quite a while now, and the development scenarios we face today are a lot different than they were a few years ago, and each of these different version control tools has evolved, but the author has always maintained that Git is the most efficient tool available today and that this is due to top-level design thinking, so let’s take a look at “Why You Should Use Git for Version Control” today.</p>
+<h2 id="Overview"><a href="#Overview" class="headerlink" title="Overview"></a>Overview</h2><p>When we talk about the best version control system, we need to find a few rivals for Git to compare against, so that we can understand more clearly what the design philosophy behind Git brings to the table.</p>
+<p>The following is a list of the most common commands used by the two tools to check out the repository, update the local repository, commit locally, and commit to the main repository.</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"># check out the repository</span><br><span class="line">+ svn checkout --username=&lt;username&gt; &lt;repo&gt;</span><br><span class="line">+ git clone git://&lt;repo&gt;</span><br><span class="line"></span><br><span class="line"># Update locally checked-out files</span><br><span class="line">+ svn update</span><br><span class="line">+ git pull</span><br><span class="line"></span><br><span class="line"># Commit files locally</span><br><span class="line">+ N/A</span><br><span class="line">+ git add &lt;files&gt; &amp;&amp; git commit</span><br><span class="line"></span><br><span class="line"># Add files to the main repo</span><br><span class="line">+ svn commit</span><br><span class="line">+ git push</span><br></pre></td></tr></table></figure>
+
+<p>While the two version control systems have a lot of equivalent features, the differences between the two systems show the different design choices that they make. For example, SVN does not support local commits, which is a completely different design philosophy from Git.</p>
+<p>Before we dive into the design decisions of Git, let’s go back to the question of “why you should use Git for version control” and think about it in a different way - what do we want from a version control system and how do we define a better one? Linus, in a 2007 Google Talk, described three characteristics that a version control system must-have.</p>
+<p>The development model in the version control system must be distributed.<br>The version control system must provide good enough performance support.<br>the version control system must guarantee the integrity of the files and provide protection against data loss or corruption.<br>version-control-system</p>
+<p>The last two of these three points are easy to understand, and while many may wonder why performance is so important for a version control tool that is used infrequently on a daily basis, no one can resist a performance boost (especially if it is free).</p>
+<h2 id="Design"><a href="#Design" class="headerlink" title="Design"></a>Design</h2><p>In the previous section, we covered the three characteristics that a version control system must meet: distribution, performance, and reliability.</p>
+<p>A distributed approach that better fits the scenario of how a version control system works.<br>Performance improvements encourage us to do things less expensively.<br>Reliability to help us catch data loss or corruption due to disk failure in a timely manner.<br>These features are essential to a good version control system, and we’ll cover each of them in turn and how Git is designed and implemented to follow these rules.</p>
+<h2 id="Distributed"><a href="#Distributed" class="headerlink" title="Distributed"></a>Distributed</h2><p>If you’ve been using Git as a version control tool since you were a developer, you may not appreciate the limitations of using a centralized version control tool, but let’s say we’re using a centralized version control system where all developers have to connect to the same server in order to develop and commit.</p>
+<p>Choosing a centralized version control tool means that we must accept several disadvantages.</p>
+<p>Engineers must all need to be connected to the network in order to develop, and cannot commit in case of poor or no network conditions.<br>many people may think they don’t have the need to work offline, but this is actually more common in our daily work. 100 megabytes of bandwidth is sufficient for daily development, but in complex network environments, there are still many times when we encounter scenarios where the network is unavailable or extremely poor, such as on planes and trains.<br>for a larger distributed development team, it is also difficult for us to ensure that all members can connect to the same main repository at the same time through a high-speed network such as a backbone network in actual production.<br>that commits and changes to the central repository, such as branch creation, are visible to all developers.<br>when we use a centralized development model, whether we commit code or create new experimental branches, these operations actually change the codebase shared by all, which means that if a developer creates many experimental branches, the codebase for all developers becomes larger as well.<br>Although we can create branches in the central repository, since there is no namespace in the central repository, it is very easy to have naming conflicts if developers create branches that do not follow specific naming rules, such as various test branches.<br>all developers in the current repository need to have permission to commit code directly to the main repository, otherwise, they cannot develop.<br>Also giving all developers in the project write access is actually a dangerous thing; we don’t know if these developers have enough experience to operate the main repository, and if there is an operational error, all members will be exposed to the risks associated with this error.<br>All three of these problems are caused by a centralized master repository, and they are problems that cannot be avoided in a centralized system. These shortcomings of a centralized version control system are very detrimental to the experience, which is why Git chose to use a distributed design philosophy to guide its implementation.</p>
+<p>In a distributed version control system, all nodes are equivalent in implementation, and they can access all data in other repositories at once, as long as they have access. Different nodes can pull code from each other. We can use the git clone command to download all the data from one repository and create branches, changes, and commits locally, or we can choose to push new changes to other nodes or wait for other nodes to pull them.</p>
+<p>While all nodes are equivalent in implementation, in practice we may also have one or more master repositories that help multiple developers synchronize their code. The relationship between the nodes is more like a forkable tree structure, and with a distributed model, as opposed to a centralized version control system.</p>
+<p>Git allows us to commit locally to support offline work.<br>Git allows us to create branches locally and without the problem of namespace conflicts.<br>Git allows commits to be done via Pull Request without all developers having to write access to the main repository.<br>For example, all version numbers in SVN are serial incremental numbers, so there are no conflicts and it’s easier to communicate.</p>
+<p>Although a distributed version control system can bring us various benefits, it does not mean that a centralized system does not work. On the contrary, a centralized version control system can work better in projects where the code needs to be tightly controlled because the company or project makes the decision that “the code needs to be very tightly controlled” and the resulting reduction in efficiency is acceptable, so it is really a trade-off between development efficiency and permission review.</p>
+<p>Many companies and decision-makers may very easily underestimate the degree of ‘efficiency reduction’ that a centralized repository can bring because they don’t understand engineering and version control systems.</p>
+<p>In practice, however, there is very little code that really needs to be tightly controlled. Most companies have very low-security internal code that is not only of very poor quality but also doesn’t work once it’s out of the company’s environment.</p>
+<h2 id="Performance"><a href="#Performance" class="headerlink" title="Performance"></a>Performance</h2><p>Performance is also critical to a version control system, but it’s more important to choose the right metrics to measure performance. Linus’ talk at Google Talk mocked SVN developers for choosing “branch creation” as an important performance metric for their version control system, and for advertising it on their website (the exact interface is not verifiable).</p>
+<p>However, it is the performance of ‘merging branches’ that is more important to a version control system, because the ultimate goal of creating a new branch is to merge it back into the master branch, and if the performance of merging branches is so poor that each merge can take tens of seconds or even minutes, then this expensive cost will make developers wary of using branch merges, and many may choose to develop directly on the master branch because of the complexity and difficulty of merging branches because they don’t see how changing just one or two lines of code can cause an online accident!</p>
+<p>Most developers today already use Git for version control on a daily basis, and branching and merging is a very common feature. This is because it is so easy and fast to merge multiple branches with Git, and it is possible to compare and merge two complex branches in a matter of seconds without waiting too long.</p>
+<p>It’s also very fast to compare differences between two different versions and folders. As a distributed system, each Git repository has a full amount of change data, so we don’t need to go through the network to get information about the repository, and we can quickly pinpoint the changes that are causing problems compared to a centralized version control tool.</p>
+<h2 id="Reliability"><a href="#Reliability" class="headerlink" title="Reliability"></a>Reliability</h2><p>Reliability is also critical to a version control system. While professional cloud providers may not always be able to guarantee the reliability of our data and prevent corruption or loss, we as users and developers need some mechanism to protect our code from corruption.</p>
+<p>Git generates a 20-byte SHA-1 hash for each version commit, for example: e328029255d8f02909ec0cbc16cc74ef4b79e1d0. This hash represents the version number of the current commit, and it is calculated by combining the following data.</p>
+<p>The source tree of the current commit.<br>The SHA-1 hash of the last commit.<br>The names, emails, and other information of the author and committer.<br>The message of the current commit.<br>You can generate the commit version number for the current repository HEAD using the command shown below, which recalculates the information above to generate the SHA-1 hash for us from the git commit command, as you can find explained in more detail in this article.</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">$ (printf &quot;commit %s\0&quot; $(git cat-file commit HEAD | wc -c); git cat-file commit HEAD) | sha1sum</span><br><span class="line">652baf18601eecf42521a1361a8815576bc8eb55 -</span><br><span class="line">(base)</span><br></pre></td></tr></table></figure>
+<p>The SHA-1 hash is calculated using both the source tree, the hash of the last commit, the author and committer information, and the current commit message, so whenever any of the information used changes, we will find the hash inconsistency in the checksum, which will detect changes, corruption, and loss of data contained in the current repository, and it will also help us to block attackers from maliciously Although research has shown that this kind of hash conflict attack is possible, the chances of encountering this problem in practice are very low.</p>
+<p>Since GitHub detected a hash collision with SHA-1 in 2017, the Git community is considering using more complex hashing algorithms instead of SHA-1, such as SHA-256. Git hash function transition is a proposal for how Git can migrate from SHA-1 to more complex hashes and is a brief read for interested readers.</p>
+<h2 id="Summary"><a href="#Summary" class="headerlink" title="Summary"></a>Summary</h2><p>Documentation and the toolchain are very important for a tool. Good documentation not only helps beginners get started quickly but also helps users solve most of their confusion and understand the design and implementation behind the tool. The integration of SourceTree and the IDE no longer requires us to use the command line (which is what this author prefers to do), and all of these things have helped make the Git ecosystem more mature and are important reasons why we should use Git.</p>
+<p>Let’s briefly summarize some of the points made in the text.</p>
+<p>Git is a distributed version control system that allows developers to work offline and commit locally, not only to avoid the risks associated with committing large amounts of code directly but also to help limit the amount of authorization we can give to the main repository and reduce the number of conflicts caused by namespaces.<br>Git chooses to merge branches as a primary performance measure when optimizing performance, making it a very low-cost operation to encourage branching.<br>Git uses SHA-1 hashing to ensure the reliability of the data in the repository. We can use SHA-1 to verify the data and ensure the stability and reliability of all the data in the commit chain, which also helps us defend against malicious tampering from attackers.</p>
+
+
+<!--<a href="https://www.gtygo.com/12.html#disqus_thread" class="article-comment-link">Comments</a>
+<div id="disqus_thread"></div>
+<script type="text/javascript">
+    /* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
+    var disqus_shortname = ''; // required: replace example with your forum shortname
+
+    /* * * DON'T EDIT BELOW THIS LINE * * */
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a target="_blank" rel="noopener" href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+-->
+<div style="display:none">
+<script src="http://s4.cnzz.com/stat.php?id=&web_id=" language="JavaScript"></script>script>
+</div>
+
+
+
+
+
+
+</body>
+</html>

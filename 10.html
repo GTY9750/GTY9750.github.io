@@ -1,0 +1,113 @@
+<html>
+<head>
+	
+	<title>Why early Windows needs defragmentation?</title>
+	<meta name="keywords" content="information tech" />
+
+    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+    
+	   <link href="/css/main.css?v=3" rel="stylesheet" type="text/css" />
+    
+        
+<script src="/js/util.js"></script>
+
+        <script>
+            if(isMobile()) {
+                loadjscssfile('../css/mobile.css', 'css');
+            } else {
+                loadjscssfile('../css/desktop.css', 'css');
+            }
+        </script> 
+    
+
+    <link rel="alternate" type="application/atom+xml" href="/atom.xml" title="Atom feed">
+
+    
+	<link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=3"/>
+    
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-76SLJ1L5G2"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-76SLJ1L5G2');
+</script>
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-76SLJ1L5G2"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+
+        gtag('config', 'G-76SLJ1L5G2');
+    </script>
+    <script data-ad-client="ca-pub-8355064206464637" async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+
+<body>
+
+
+<h2 class="title">Why early Windows needs defragmentation?</h2>
+<!--
+<div style="text-align:center;margin-top: -10px;">
+<div class="article-category">
+发表于2021年9月2日
+
+
+
+
+ </div>
+-->
+</div>
+
+<ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#Why-early-Windows-needs-defragmentation"><span class="toc-text">Why early Windows needs defragmentation?</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#File-systems"><span class="toc-text">File systems</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Mechanical-Hard-Disk-Drive"><span class="toc-text">Mechanical Hard Disk Drive</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Wrap-up"><span class="toc-text">Wrap-up</span></a></li></ol></li></ol>
+<h1 id="Why-early-Windows-needs-defragmentation"><a href="#Why-early-Windows-needs-defragmentation" class="headerlink" title="Why early Windows needs defragmentation?"></a>Why early Windows needs defragmentation?</h1><p>I remember a dozen years ago when I was still using the early Windows system, every time I used the system would become very laggy, then you need to open the following disk defragmentation program provided by the system when the defragmentation is complete will feel the system becomes slightly smoother.</p>
+<p>In file systems, defragmentation is a process of reducing fragmentation in the file system1 that rearranges the contents of identical files on the disk in order and removes gaps between files using a compression algorithm, somewhat similar to the marker compression algorithm in garbage collection2.</p>
+<p>The author has not used Windows for many years and has been using macOS since college for seven or eight years this year. Recently, while studying the file system, it occurred to me that the disk defragmentation program I used to see as a child seems to have disappeared. I don’t know if Windows still needs disk defragmentation today, but there are no similar tools on either Linux or macOS3, which makes the author want to look into the reasons behind it. In summary, there are two main reasons why operating systems need defragmentation.</p>
+<p>(a) The design of the file system allows for a lot of fragmentation after resources have been released.<br>random read and write performance of mechanical hard drives is several orders of magnitude worse than sequential read and write.</p>
+<h2 id="File-systems"><a href="#File-systems" class="headerlink" title="File systems"></a>File systems</h2><p>Windows in ancient times used a very simple file system - File Allocation Table (FAT).4 The design of this file system is the root cause of disk fragmentation, but before analyzing the system, let’s introduce the history of the file system here.</p>
+<p>FAT was the first file system designed for floppy disks in 1977. Floppy disks are a very old storage medium, and today’s computers have removed the floppy disk drive, which had very little storage space at the time.</p>
+<p>Soon after the file system was used, Microsoft chose to extend the FAT file system to support more space in the DOS and Windows 9x series as mechanical hard disk drives (Hard Disk Driver, HDD) began to become cheaper and more widely used, and disk-sensitive applications such as databases quickly became very popular.</p>
+<p>Although fragmentation could occur with each write of data, this was acceptable at the time because of the relatively small storage space on floppy disks, but as storage media became more spacious, we needed to introduce random writes to improve efficiency, and a FAT that supported random writes was also quite simply a file system5.</p>
+<p>If we want to write multiple files A, B, and C to a new drive, these files will be stored sequentially in the FAT file system without any fragmentation between the files. However, if at this point we decide to delete file B and write a larger file D to the file system, a more interesting situation arises.</p>
+<p>The FAT file system will first find two free spots on the disk after deleting B and write part of the D file to them, and then it will find another free spot after the C file and write all the remaining contents of the D file to it. The result is that the D file is scattered all over the drive, triggering multiple random reads when the user reads the D file.</p>
+<p>FAT is a very simple, primitive file system that is poorly designed and implemented from today’s perspective, not only does it not check the size of free space and cause file fragmentation every time a file is written, it also does not include fragmentation management features and requires the user to manually trigger disk defragmentation over time, which is a very poor design and user experience.</p>
+<h2 id="Mechanical-Hard-Disk-Drive"><a href="#Mechanical-Hard-Disk-Drive" class="headerlink" title="Mechanical Hard Disk Drive"></a>Mechanical Hard Disk Drive</h2><p>Mechanical hard disk (Hard Disk Drive, HDD) is an electronic-based, non-volatile mechanical data storage device, which uses magnetic memory to store and find data on the disk, in the process of reading and writing data, the head connected to the mechanical arm of the hard disk will read and write bits on the surface of the disk6.</p>
+<p>It is because of the complex mechanical structure of the disk that it takes a lot of time to read and write to the disk, and then read and write performance of the database is dependent on the performance of the disk, if we query a random piece of data in a database using a mechanical hard disk, this may trigger random I/O on the disk, however, the cost required to read the data from the disk into memory is very large, ordinary disks (not SSD) need to load the data through these processes of queuing, seeking, spinning and transfer, which takes about 10ms7.</p>
+<p>When we read a file on disk, if the contents of the file are scattered in different locations on the disk, it may take several random I/Os to get the entire contents of the file, which is a significant additional overhead for a mechanically structured disk. If the contents of the file will be stored in the same location, then only one random I/O needs to be performed when reading the file, and all subsequent reads can use sequential I/O at a speed of about 40 MB/s, which can significantly reduce the read time of the file.</p>
+<p>Fragmented files cause more serious performance problems on mechanical drives, and ideally, we would like the disk to reach its upper limit of reading/write bandwidth; however, in practice, frequent random I/Os allow the disk to spend most of its time seeking and spinning, preventing it from working at full capacity. An SSD with an electronic architecture can better tolerate a fragmented file system than a mechanical drive, and defragmentation can instead affect its lifespan.</p>
+<h2 id="Wrap-up"><a href="#Wrap-up" class="headerlink" title="Wrap-up"></a>Wrap-up</h2><p>I believe that many engineers used Windows before entering the industry, and Windows was nearly the only choice for desktop systems in the early days, so the author has special feelings about today’s topic, having never thought about it before studying the OS file system until the term fragmented file system made him think of the questions he had more than a decade ago. The feeling of clarity is still rarely experienced today. Let’s briefly summarize two reasons why early Windows needed defragmentation.</p>
+<p>Early Windows systems used a simple FAT file system, which was subject to frequent write and deletes operations that resulted in large files being scattered all over the disk.<br>mechanical hard drives were the dominant devices of their time more than a decade ago, although the mechanical construction of hard drives meant that random reading and writing to locations on the disk required physical seek and rotation, causing the process to be extremely slow.</p>
+
+
+<!--<a href="https://www.gtygo.com/10.html#disqus_thread" class="article-comment-link">Comments</a>
+<div id="disqus_thread"></div>
+<script type="text/javascript">
+    /* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
+    var disqus_shortname = ''; // required: replace example with your forum shortname
+
+    /* * * DON'T EDIT BELOW THIS LINE * * */
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a target="_blank" rel="noopener" href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+-->
+<div style="display:none">
+<script src="http://s4.cnzz.com/stat.php?id=&web_id=" language="JavaScript"></script>script>
+</div>
+
+
+
+
+
+
+</body>
+</html>

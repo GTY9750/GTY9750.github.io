@@ -1,0 +1,123 @@
+<html>
+<head>
+	
+	<title>Why Bitcoin is Tamper-Proof?</title>
+	<meta name="keywords" content="information tech" />
+
+    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+    
+	   <link href="/css/main.css?v=3" rel="stylesheet" type="text/css" />
+    
+        
+<script src="/js/util.js"></script>
+
+        <script>
+            if(isMobile()) {
+                loadjscssfile('../css/mobile.css', 'css');
+            } else {
+                loadjscssfile('../css/desktop.css', 'css');
+            }
+        </script> 
+    
+
+    <link rel="alternate" type="application/atom+xml" href="/atom.xml" title="Atom feed">
+
+    
+	<link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=3"/>
+    
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-76SLJ1L5G2"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-76SLJ1L5G2');
+</script>
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-76SLJ1L5G2"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+
+        gtag('config', 'G-76SLJ1L5G2');
+    </script>
+    <script data-ad-client="ca-pub-8355064206464637" async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+
+<body>
+
+
+<h2 class="title">Why Bitcoin is Tamper-Proof?</h2>
+<!--
+<div style="text-align:center;margin-top: -10px;">
+<div class="article-category">
+发表于2021年9月2日
+
+
+
+
+ </div>
+-->
+</div>
+
+<ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#Why-Bitcoin-is-Tamper-Proof"><span class="toc-text">Why Bitcoin is Tamper-Proof?</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#Consensus-algorithm"><span class="toc-text">Consensus algorithm</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Wrap-up"><span class="toc-text">Wrap-up</span></a></li></ol></li></ol>
+<h1 id="Why-Bitcoin-is-Tamper-Proof"><a href="#Why-Bitcoin-is-Tamper-Proof" class="headerlink" title="Why Bitcoin is Tamper-Proof?"></a>Why Bitcoin is Tamper-Proof?</h1><p>Bitcoin (Bitcoin) is a cryptocurrency and a distributed digital asset. More than 10 years have passed since Satoshi Nakamoto released Bitcoin today.1 Some readers may have come across blockchain technology and even invested in the assets of the digital currency. Today’s total blockchain market cap has reached $270 billion, and Bitcoin’s market cap has reached $170 billion.2 However, the underlying technology used by Bitcoin is actually very simple; it’s just a clever combination of these technologies.</p>
+<p>If we know a little bit about blockchain technology like Bitcoin, we’ll see that it’s a cleverly designed distributed database. As a distributed database operating on the public network, Bitcoin and other blockchain networks are exposed to attacks from malicious nodes in the network. Because Bitcoin has to deal with a complex network environment and unreliable nodes, it has been designed and implemented to cope with this, and we can see how it combines existing technologies to prevent malicious nodes from tampering with transaction and account data.</p>
+<p>The Bitcoin network will ensure that user-issued transactions and transactions that have occurred historically cannot be tampered with by an attacker through two main techniques.</p>
+<p>Asymmetric encryption ensures that an attacker cannot forge the signature of the account owner.<br>Consensus algorithms ensure that historical transactions in the network are not replaced by an attacker.<br>Asymmetric encryption<br>Asymmetric encryption algorithm3 is a widely used encryption technique today. Scenarios such as TLS certificates and electronic signatures use asymmetric encryption algorithms to ensure security. The asymmetric-cryptography algorithm contains both a Public Key and a Private Key. Data encrypted with the Private Key can only be decrypted with the Public Key, and data encrypted with the Public Key can only be decrypted with the Private Key.</p>
+<p>Bitcoin uses an asymmetric-cryptography algorithm to secure each transaction. Each account (address) in the network is the public key of a pair of secret keys, and the owner of the account will hold the private key, as shown in the following pair of just-generated Bitcoin addresses and private keys4.</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">Address:     13RTT8MsbAj7o4zL7w4DNNuuwhgGgHqLnK</span><br><span class="line">Private Key: 469d998dd4db3dfdd411fa56574e52b6be318f993ca696cc5c683c45e8e147eb</span><br></pre></td></tr></table></figure>
+<p>Note that using a website to generate bitcoin addresses and private keys is an extremely dangerous practice. We do not know if the website will store private keys, so it is recommended to use a bitcoin client to generate public and private key pairs.</p>
+<p>Anyone with the above address 13RTT8MsbAj7o4zL7w4DNNuuwhgGgHqLnK can transfer money to the account; the account holder can also use the private key to sign transactions to transfer money to other addresses. When we want to submit a new transaction to the Bitcoin network, we need to first construct a transaction structure as shown below.</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">   &quot;txid&quot;: &quot;5be7a9e47f56c98e5297a44df52da0475f448ece98bb51489103cdf70653092f&quot;,</span><br><span class="line">   &quot;hash&quot;: &quot;5be7a9e47f56c98e5297a44df52da0475f448ece98bb51489103cdf70653092f&quot;,</span><br><span class="line">   &quot;version&quot;:1,</span><br><span class="line">   &quot;size&quot;:224,</span><br><span class="line">   &quot;vsize&quot;:224,</span><br><span class="line">   &quot;locktime&quot;:0,</span><br><span class="line">   &quot;vin&quot;: [...] ,</span><br><span class="line">   &quot;vout&quot;: [...] ,</span><br><span class="line">   &quot;hex&quot;:&quot; 0100000001a90b4101e6cbb75e1ff885b6358264627581e9f96db9ae609acec98d72422067000000006b483045022100c42c89eb2b10aeefe27caea63f562837b20290f0a095bda39bec37f2651af56b02204ee4260e81e31947d9297e7e9e027a231f5a7ae5e21015aabfdbdb9c6bbcc76e0121025e6e9ba5111117d49cfca477b9a0a5fba1dfcd18ef91724bc963f709c52128c4ffffffff02a037a0000000000017a91477df4f8c95e3d35a414d7946362460d3844c2c3187e6f6030b000000001976a914aba7915d5964406e8a02c3202f1f8a4a63e95c1388ac00000000 &quot;,</span><br><span class="line">   &quot;blockhash&quot;: &quot;000000000000000000000c23ca00756364067ce5e815deb5982969df476bfc0b5c&quot;,</span><br><span class="line">   &quot;confirmations&quot;:5,</span><br><span class="line">   &quot;time&quot;:1521981077,</span><br><span class="line">   &quot;blocktime&quot;:1521981077</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>Next, we can use the private key holder to sign all the fields in the entire transaction, then just package the signature with the transaction and send it to the network to wait for confirmation from the Bitcoin network.</p>
+<p>Of all the addresses in Bitcoin, 35hK24tcLEWcgNA4JxpvbkNkoAcDGqQPsP currently holds more than 250,000 Bitcoin5 addresses, with a current market cap of roughly $2 billion. With only the address known, let’s calculate how long it would take to obtain the private key corresponding to that address. Bitcoin’s private key has a total of 256 bits or 2256 medium possibilities.</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">115792089237316195423570985008687907853269984665640564039457584007913129639936</span><br></pre></td></tr></table></figure>
+<p>At present, we do not have a quicker means of cracking, and can only use brute force cracking to calculate the private key. Suppose we use Summit6, a supercomputer introduced by IBM in 2018, which can do 1.4 ∗ 1017 floating-point calculations per second. Assuming that the computer can calculate the same number of public-private key pairs per second (calculating public-private key pairs is far more complicated than one floating-point calculation), it takes the following time to find the private key corresponding to the address where the $2 billion assets are stored.</p>
+<p>1.15∗1077365∗86400∗1.4∗1017=2.9∗1052 years<br>The existence time of our entire universe is only a few billionths of the time to crack the private key, so without a revolutionary breakthrough in the current computing power, it is only theoretically possible to obtain the private key corresponding to the public key by means of violent cracking, and completely impossible in practice7.</p>
+<h2 id="Consensus-algorithm"><a href="#Consensus-algorithm" class="headerlink" title="Consensus algorithm"></a>Consensus algorithm</h2><p>MySQL and other databases store data in behavioral units, while Bitcoin is a distributed database in which the basic unit of storage is the block. Blocks are connected by hash pointers to form a tree, as shown in the following figure, in which the longest chain in green is the main chain of the network.</p>
+<p>How to get all the nodes in the network to reach a consensus on the contents of the next block is the key problem that Bitcoin needs to solve. Only by getting the nodes to agree on the data will it ensure that past transactions will not be tampered with, but as a distributed database running on the public network, it faces a very complex scenario and needs to solve the distributed consistency problem under the Byzantine General problem.</p>
+<p>The Byzantine General Problem is a fault-tolerance problem in the distributed domain proposed by Leslie Lamport in The Byzantine Generals Problem paper, which is the most complex and strict fault-tolerance model in the distributed domain.8 Under this model, the system does not impose any restrictions on the nodes in the cluster, and they can send random data to other nodes, error data, or choose not to respond to requests from other nodes, and these unpredictable behaviors make the problem of fault tolerance even more complex.</p>
+<p>The Byzantine-generals problem describes a scenario in which a group of generals each command a part of the army, and each general does not know whether the other generals are reliable or not, or whether the information passed by the other generals is reliable, but they need to choose whether to attack or retreat by voting on.</p>
+<p>Blockchain technology uses consensus algorithms and incentives for multiple nodes to achieve distributed consistency in the Byzantine generals scenario. Bitcoin uses the following rules to allow multiple nodes to achieve distributed consistency.</p>
+<p>introduction of proof of work - allowing nodes to compute hashes that satisfy certain conditions before committing a new block, replacing the traditional distributed consistency algorithm where one person, one vote (or one node, one vote) is set.<br>introducing the setting that the longest chain is the master chain - only transactions on the master chain are considered legitimate.<br>introduction of incentives - nodes that submit blocks is rewarded with bitcoins.<br>With the above rules, individual nodes will compute hashes on the longest chain in an effort to submit legitimate blocks. Once one of the nodes has more than 51% of the computing power, however, it can change the history of the blockchain through its powerful arithmetic. Because blocks have continuity, a change in the previous block invalidates the hash computed in the latter block. As shown in Figure 4, if an attacker needs to change the penultimate yellow block in the main chain, it needs to build four blocks in a row to complete the tampering of the history before other nodes continue to compute on this longer chain: the</p>
+<p>The probability of rewriting 0 ~ 9 blocks of history in an infinite time when the attacker holds 51% of the computation power can be calculated using the following code9.</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line">#include &lt;math.h&gt;</span><br><span class="line">#include &lt;stdio.h&gt;</span><br><span class="line"></span><br><span class="line">double attackerSuccessProbability(double q, int z) &#123;</span><br><span class="line">    double p = 1.0 - q;</span><br><span class="line">    double lambda = z * (q / p);</span><br><span class="line">    double sum = 1.0;</span><br><span class="line">    int i, k;</span><br><span class="line">    for (k = 0; k &lt;= z; k++) &#123;</span><br><span class="line">        double poisson = exp(-lambda);</span><br><span class="line">        for (i = 1; i &lt;= k; i++)</span><br><span class="line">            poisson *= lambda / i;</span><br><span class="line">        sum -= poisson * (1 - pow(q / p, z - k));</span><br><span class="line">    &#125;</span><br><span class="line">    return sum;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">int main() &#123;</span><br><span class="line">    for (int i = 0; i &lt; 10; i++) &#123;</span><br><span class="line">        printf(&quot;z=%d, p=%f\n&quot;, i, attackerSuccessProbability(0.51, i));</span><br><span class="line">    &#125;</span><br><span class="line">    return 0;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>The above calculation shows that the probability that a node with 51% of the network’s arithmetic power can launch a 51% attack to modify the history is 100% in an infinite amount of time; however, in a finite amount of time, because the arithmetic power in Bitcoin is relatively dynamic and the nodes in the Bitcoin network are avoiding situations where a single node has more than 51% of the arithmetic power, it is still difficult to tamper with the history of Bitcoin, but in some niche blockchain networks where arithmetic power is not guaranteed, 51% attacks are extremely common10.</p>
+<p>In most blockchain networks, transactions just added to the blockchain network are unconfirmed, and only after a sufficient number of blocks are appended to the block will the transactions in the block be confirmed. The number of confirmed transactions in Bitcoin is 6, and Bitcoin generates a block in 10 minutes on average, so a transaction takes about 60 minutes to confirm, which is a sacrifice that has to be made to ensure security. However, increasing the number of confirmations does not guarantee 100% security, and we can only increase the cost to the attacker as much as possible without affecting the user experience.</p>
+<h2 id="Wrap-up"><a href="#Wrap-up" class="headerlink" title="Wrap-up"></a>Wrap-up</h2><p>Studying blockchain technology like Bitcoin is still very interesting. As a distributed database, it also encounters problems that distributed systems often encounter, such as unreliable nodes, and as a financial system and ledger, it also faces more complex transaction validation and verification scenarios. The design of the Bitcoin network is very interesting. It is the product of the combination of two intersecting fields, technology, and finance, and is well worth our time to study the principles behind it.</p>
+<p>Bitcoin does not provide 100% protection against transaction and data tampering. Both techniques mentioned in the article can only guarantee security with a certain probability, and reducing the likelihood of success for attackers is a constant problem in security. Let’s take a more critical approach to today’s question - what techniques are used by Bitcoin to increase the cost to attackers and reduce the probability of transaction tampering.</p>
+<p>Bitcoin uses asymmetric encryption algorithms that guarantee that an attacker cannot forge the signature of the account owner for a limited period of time.<br>Bitcoin uses a proof-of-work consensus algorithm and introduces incentives for bookkeeping to ensure that historical transactions in the network are not quickly replaced by an attacker.</p>
+
+
+<!--<a href="https://www.gtygo.com/11.html#disqus_thread" class="article-comment-link">Comments</a>
+<div id="disqus_thread"></div>
+<script type="text/javascript">
+    /* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
+    var disqus_shortname = ''; // required: replace example with your forum shortname
+
+    /* * * DON'T EDIT BELOW THIS LINE * * */
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a target="_blank" rel="noopener" href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+-->
+<div style="display:none">
+<script src="http://s4.cnzz.com/stat.php?id=&web_id=" language="JavaScript"></script>script>
+</div>
+
+
+
+
+
+
+</body>
+</html>

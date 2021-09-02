@@ -1,0 +1,135 @@
+<html>
+<head>
+	
+	<title>Why do system calls consume more resources?</title>
+	<meta name="keywords" content="information tech" />
+
+    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+    
+	   <link href="/css/main.css?v=3" rel="stylesheet" type="text/css" />
+    
+        
+<script src="/js/util.js"></script>
+
+        <script>
+            if(isMobile()) {
+                loadjscssfile('../css/mobile.css', 'css');
+            } else {
+                loadjscssfile('../css/desktop.css', 'css');
+            }
+        </script> 
+    
+
+    <link rel="alternate" type="application/atom+xml" href="/atom.xml" title="Atom feed">
+
+    
+	<link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=3"/>
+    
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-76SLJ1L5G2"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-76SLJ1L5G2');
+</script>
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-76SLJ1L5G2"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+
+        gtag('config', 'G-76SLJ1L5G2');
+    </script>
+    <script data-ad-client="ca-pub-8355064206464637" async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+
+<body>
+
+
+<h2 class="title">Why do system calls consume more resources?</h2>
+<!--
+<div style="text-align:center;margin-top: -10px;">
+<div class="article-category">
+发表于2021年9月2日
+
+
+
+
+ </div>
+-->
+</div>
+
+<ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#Why-do-system-calls-consume-more-resources"><span class="toc-text">Why do system calls consume more resources?</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#Assembly-instructions"><span class="toc-text">Assembly instructions</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#vDSO"><span class="toc-text">vDSO</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Summary"><span class="toc-text">Summary</span></a></li></ol></li></ol>
+<h1 id="Why-do-system-calls-consume-more-resources"><a href="#Why-do-system-calls-consume-more-resources" class="headerlink" title="Why do system calls consume more resources?"></a>Why do system calls consume more resources?</h1><p>A system call is a way for a computer program to request services from the operating system kernel during execution, which may include hardware-related services, the creation and execution of new processes, and process scheduling. Anyone with a little knowledge of operating systems knows that - system calls provide an interface to the operating system for user programs1.</p>
+<p>The well-known Glibc for C encapsulates the system calls provided by the operating system and provides a well-defined interface2 that allows engineers to develop upper-level applications directly using the functions encapsulated in the container, and standard libraries for other programming languages also encapsulate system calls, providing a language-native interface externally and triggering system calls internally using assembly language.</p>
+<p>We often need to deal with system calls when using the standard library, but often we do not know the implementation behind the standard library.</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line">#include &lt;stdio.h&gt;</span><br><span class="line">int main() &#123;</span><br><span class="line">   printf(&quot;Hello, World!&quot;);</span><br><span class="line">   return 0;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">$ gcc hello.c -o hello</span><br><span class="line">$ strace . /hello</span><br><span class="line">execve(&quot;. /hello&quot;, [&quot;. /hello&quot;], 0x7ffd64dd8090 /* 23 vars */) = 0</span><br><span class="line">brk(NULL) = 0x557b449db000</span><br><span class="line">access(&quot;/etc/ld.so.nohwcap&quot;, F_OK) = -1 ENOENT (No such file or directory)</span><br><span class="line">access(&quot;/etc/ld.so.preload&quot;, R_OK) = -1 ENOENT (No such file or directory)</span><br><span class="line">openat(AT_FDCWD, &quot;/etc/ld.so.cache&quot;, O_RDONLY|O_CLOEXEC) = 3</span><br><span class="line">fstat(3, &#123;st_mode=S_IFREG|0644, st_size=26133, ...&#125;) = 0</span><br><span class="line">mmap(NULL, 26133, PROT_READ, MAP_PRIVATE, 3, 0) = 0x7f645455a000</span><br><span class="line">close(3) = 0</span><br><span class="line">...</span><br><span class="line">munmap(0x7f645455a000, 26133) = 0</span><br><span class="line">fstat(1, &#123;st_mode=S_IFCHR|0600, st_rdev=makedev(136, 0), ...&#125;) = 0</span><br><span class="line">brk(NULL) = 0x557b449db000</span><br><span class="line">brk(0x557b449fc000) = 0x557b449fc000</span><br><span class="line">write(1, &quot;Hello, World!&quot;, 13Hello, World!) = 13</span><br><span class="line">exit_group(0) = ?</span><br><span class="line">+++ exited with 0 +++</span><br></pre></td></tr></table></figure>
+
+<p>strace is a tool in Linux for monitoring and tampering with the operations between processes and the kernel. The above command prints out information about system calls, arguments and return values triggered during the execution of hello. Most of the system calls triggered by the Hello World program are triggered by the program startup, only the system calls after munmap are triggered by the printf function, and as an application, we are very limited in what we can do and rely on the services provided by the operating system for many functions.</p>
+<p>The function calls in most programming languages simply allocate new stack space, write arguments to registers and execute a CALL assembly instruction to jump to the target address to execute the function and return the arguments via the stack or registers when the function returns.3 System calls consume more resources than function calls.</p>
+<p>getpid(2) is a relatively fast system call that does not contain any arguments and only switches to the kernel state, reads variables, and returns the PID, so we can use its execution time as a benchmark for system calls; in addition to getpid(2), using the close(999) system call to close non-existent file descriptors consumes fewer resources5. Compared to getpid(2), it will take about 20 CPU cycles less.6 Of course, if you want to implement a system call for testing additional overhead, using a custom null function should be a perfect choice, so interested readers can try it out for themselves.</p>
+<p>From the above benchmarks of system calls and function calls, we can see that a system call without vSDO acceleration takes tens of times longer than a normal function call.</p>
+<p>Using a software interrupt (Software interrupt) to trigger a system call.<br>Using assembly instructions such as SYSCALL / SYSENTER to trigger system calls.<br>Using a virtual dynamic shared object (vDSO) to execute a system call.<br>Software interrupts<br>An interrupt is an input signal sent to the processor that can indicate a time that requires immediate processing by the operating system. If the operating system receives an interrupt, then the processor suspends the current task, stores the context state, and executes the interrupt processor to process the event that occurred. After the interrupt processor finishes, the current processor resumes the context and continues to complete the previous work7.</p>
+<p>Hardware interrupts are electronic signals triggered by devices external to the processor, while software interrupts are triggered by the processor during the execution of specific instructions, and some special instructions can intentionally trigger software interrupts8.</p>
+<p>On 32-bit x86 systems, we can use the INT instruction to trigger software interrupts. Early Linux would use INT 0x80 to trigger software interrupts, register a specific interrupt processor entry_INT80_32 to handle system calls, and let’s understand the specific process of using software interrupts to execute system calls9.</p>
+<p>The application initiates the system call by calling a function in the C language library.<br>(b) The C language function receives the arguments passed in by the caller through the stack and copies the arguments needed for the system call into registers.</p>
+<p>each system call in Linux has a specific serial number, and the function copies the number of the system call to the eax register.</p>
+<p>the function executes the INT 0x80 instruction and the processor switches from the user state to the kernel state and executes the predefined processor.</p>
+<p>execution of the interrupt handler entry_INT80_32 to process the system call.</p>
+<p>executing SAVE_ALL to store the register values on the kernel stack and calling do_int80_syscall_32.</p>
+<p>calling do_syscall_32_irqs_on to check if the serial number of the system call is legal.</p>
+<p>finding the corresponding system call implementation in the system call table ia32_sys_call_table and passing in the value of the register.</p>
+<p>during execution, the system call checks the legality of the parameters, transfers data between user state memory and kernel state memory, and the result of the system call is stored in the eax register.</p>
+<p>restoring the value of the register from the kernel stack and placing the return value on the stack.<br>(b) The system call returns the C function and the wrapper function returns the result to the application.<br>if an error occurs during the execution of the system call service, the C function stores the error in the global variable errno and returns a status expressed as an integer int based on the result of the system call.</p>
+<p>From the execution process of the above system call, we can see that the software interrupt-based system call is a relatively complex process. The application falls into the kernel state through the software interrupt and queries and executes the functions registered in the system call table in the kernel state, and the whole process not only requires storing the data in the registers, switching from the user state to the kernel state but also needs to finish verifying the legitimacy of the parameters, which indeed brings a lot of extra overhead compared with the function call process10 .</p>
+<p>The use of INT 0x80 to trigger system calls is a thing of the past, and most programs try to avoid it. However, this rule is not universal, as the Go team has found in benchmarking that INT 0x80 triggered system calls have almost the same performance as other methods on some operating systems11 , so interrupts are still used to execute system calls on architectures such as Android/386 and Linux/38612</p>
+<h2 id="Assembly-instructions"><a href="#Assembly-instructions" class="headerlink" title="Assembly instructions"></a>Assembly instructions</h2><p>Because system calls implemented using software interrupts perform very poorly on Pentium 4 processors13. Linux addresses this issue with newer versions of the SYSENTER / SYSCALL assembly instructions, which are used on Intel and AMD to implement fast system calls, and we will use them on 32-bit operating systems SYSENTER / SYSEXIT on 32-bit operating systems and SYSCALL / SYSRET on 64-bit operating systems.</p>
+<p>Several of the above assembly instructions are low-latency system call and return instructions that will assume that the OS implements the Linear-memory Model, which greatly simplifies the OS system call and return process, which includes unnecessary checks, pre-loading parameters, etc. Using fast system call instructions can reduce clock cycles by 25% compared to software interrupt-driven system calls13.</p>
+<p>The linear memory model is a common paradigm for memory addressing in which linear memory is stored with the application in a single contiguous spatial address and the CPU can access the available memory addresses directly without resorting to memory fragmentation or paging techniques using addresses.</p>
+<p>On a 64-bit operating system, we would use the SYSCALL / SYSRET entry and exit system calls, which are executed at the highest privilege level of the operating system. The kernel will call the syscall_init function during initialization to store entry_SYSCALL_64 into the MSR register (Model Specific Register, MSR), which is the control register for debugging, tracing, and performance monitoring in the x86 instruction set14: void syscall_init</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">void syscall_init(void) &#123;</span><br><span class="line">    wrmsr(MSR_STAR, 0, (__USER32_CS &lt;&lt; 16) | __KERNEL_CS);</span><br><span class="line">    wrmsrl(MSR_LSTAR, (unsigned long)entry_SYSCALL_64);</span><br><span class="line">    ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>When the kernel receives a system call triggered by the user program, it reads the function to be executed in the MSR register and reads the number of the system call and its parameters in the register according to the x86-64 calling convention, which you can find in the comments of the entry_SYSCALL_64 function.</p>
+<p>The assembly function entry_SYSCALL_64 calls do_syscall_64 during execution, and its implementation is somewhat similar to do_int80_syscall_32 in the previous section in that they both look up the function in the system call table and pass in the parameters in the registers.</p>
+<p>Unlike INT 0x80, which implements system calls by triggering software interrupts, SYSENTER and SYSCALL are assembly instructions designed specifically for system calls. They do not need to look up the execution procedure corresponding to the system call in the Interrupt Descriptor Table (IDT), nor do they need to save information such as the stack and return address, so they can reduce the extra overhead required.</p>
+<h2 id="vDSO"><a href="#vDSO" class="headerlink" title="vDSO"></a>vDSO</h2><p>A virtual dynamic shared object (vDSO) is a mechanism by which the Linux kernel exposes some functions in kernel space to userspace.15 In short, we map system calls in the Linux kernel that do not involve security directly to user space, so that applications in user space do not need to switch to kernel state when calling these functions to reduce performance loss. This way, applications in user space do not need to switch to kernel state when calling these functions to reduce the performance loss.</p>
+<p>vDSO uses standard link-and-load techniques as a dynamically linked library, which is provided by the Linux kernel and mapped to each executing process, and we can see where this dynamically linked library is located in the process using the following command.</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">$ ldd /bin/cat</span><br><span class="line">    linux-vdso.so.1 (0x00007fff2709c000)</span><br><span class="line">    ...</span><br><span class="line"></span><br><span class="line">$ cat /proc/self/maps</span><br><span class="line">...</span><br><span class="line">7f28953ce000-7f28953cf000 r--p 00027000 fc:01 2079 /lib/x86_64-linux-gnu/ld-2.27.so</span><br><span class="line">7f28953cf000-7f28953d0000 rw-p 00028000 fc:01 2079 /lib/x86_64-linux-gnu/ld-2.27.so</span><br><span class="line">7f28953d0000-7f28953d1000 rw-p 00000000 00:00 0</span><br><span class="line">7ffe8ca4d000-7ffe8ca6e000 rw-p 00000000 00:00 0 [stack]</span><br><span class="line">7ffe8ca8d000-7ffe8ca90000 r--p 00000000 00:00 0 [vvar]</span><br><span class="line">7ffe8ca90000-7ffe8ca92000 r--xp 00000000 00:00 0 [vdso]</span><br><span class="line">ffffffffff600000-ffffffffffff601000 r-xp 00000000 00:00 0 [vsyscall]</span><br></pre></td></tr></table></figure>
+<p>Because vDSO is provided directly by the operating system, it does not have a corresponding file, and we can see where it is loaded in virtual memory during program execution. vDSO can provide virtual system calls to user programs, and it will use the data provided by the kernel to emulate system calls in the user state.</p>
+<p>The ELF loader in the kernel takes care of mapping the memory pages of vDSO and setting the AT_SYSINFO_EHDR in the Auxiliary Vector, a tag that stores the base address of vDSO.<br>The dynamic linker queries the Auxiliary Vector for AT_SYSINFO_EHDR and links vDSO if this tag is set.<br>libc looks for the __vdso_gettimeofday symbol in vDSO during initialization and links the symbol to a global function pointer.<br>In addition to gettimeofday, vDSO on most architectures contains three other system calls, clock_gettime, clock_getres, and rt_sigreturn. These system calls are relatively simple to complete and do not pose security problems, so mapping them to user space can significantly improve the performance of the system calls, as we can see in Figure 2, using vDSO can improve the time of several of these systems calls by a factor of tens.</p>
+<h2 id="Summary"><a href="#Summary" class="headerlink" title="Summary"></a>Summary</h2><p>System calls are not a far-fetched concept when we write applications; a simple Hello World will trigger dozens of system calls during execution, and we may also need to deal with system calls when performance issues arise online. Although system calls are very frequent in programs, they introduce significant additional overhead compared to normal function calls.</p>
+<p>System calls triggered using software interrupts require information such as the stack and return address to be saved, and the response function of the system call to be looked up in the interrupt description table. Although most operating systems do not use INT 0x80 to trigger system calls, there are special scenarios where we still need to take advantage of this old technique.<br>using the assembly instructions SYSCALL / SYSENTER to execute system calls is the most common approach today, and as instructions built specifically for system calls, they can eliminate some unnecessary steps and reduce the overhead of system calls.<br>Using vSDO to execute system calls is the fastest path provided by the operating system. This approach can equalize the overhead of system calls with function calls, but because of the real security risk of mapping kernel state system calls to ‘user state’, the operating system will only release a limited number of system calls.</p>
+
+
+<!--<a href="https://www.gtygo.com/8.html#disqus_thread" class="article-comment-link">Comments</a>
+<div id="disqus_thread"></div>
+<script type="text/javascript">
+    /* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
+    var disqus_shortname = ''; // required: replace example with your forum shortname
+
+    /* * * DON'T EDIT BELOW THIS LINE * * */
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a target="_blank" rel="noopener" href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+-->
+<div style="display:none">
+<script src="http://s4.cnzz.com/stat.php?id=&web_id=" language="JavaScript"></script>script>
+</div>
+
+
+
+
+
+
+</body>
+</html>

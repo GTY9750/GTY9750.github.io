@@ -1,0 +1,116 @@
+<html>
+<head>
+	
+	<title>Why Linux needs Swapping?</title>
+	<meta name="keywords" content="information tech" />
+
+    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+    
+	   <link href="/css/main.css?v=3" rel="stylesheet" type="text/css" />
+    
+        
+<script src="/js/util.js"></script>
+
+        <script>
+            if(isMobile()) {
+                loadjscssfile('../css/mobile.css', 'css');
+            } else {
+                loadjscssfile('../css/desktop.css', 'css');
+            }
+        </script> 
+    
+
+    <link rel="alternate" type="application/atom+xml" href="/atom.xml" title="Atom feed">
+
+    
+	<link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=3"/>
+    
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-76SLJ1L5G2"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-76SLJ1L5G2');
+</script>
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-76SLJ1L5G2"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+
+        gtag('config', 'G-76SLJ1L5G2');
+    </script>
+    <script data-ad-client="ca-pub-8355064206464637" async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+
+<body>
+
+
+<h2 class="title">Why Linux needs Swapping?</h2>
+<!--
+<div style="text-align:center;margin-top: -10px;">
+<div class="article-category">
+发表于2021年9月2日
+
+
+
+
+ </div>
+-->
+</div>
+
+<ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#Why-Linux-needs-Swapping"><span class="toc-text">Why Linux needs Swapping?</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#Out-of-memory"><span class="toc-text">Out of memory</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Memory-Idle"><span class="toc-text">Memory Idle</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Summary"><span class="toc-text">Summary</span></a></li></ol>
+<h1 id="Why-Linux-needs-Swapping"><a href="#Why-Linux-needs-Swapping" class="headerlink" title="Why Linux needs Swapping?"></a>Why Linux needs Swapping?</h1><p>Anyone who knows a little bit about Linux knows that Linux divides the physical Random Access Memory (RAM) into 4KB-sized memory blocks by page, and the Swapping mechanism we are going to introduce today is closely related to memory. The physical memory and the swap partition on the hard disk make up the virtual memory available on the operating system, and these swap spaces are pre-configured by the system administrator.</p>
+<p>It is because all processes on Linux deal with physical memory indirectly through the virtual memory layer of abstraction, and Swapping takes full advantage of this feature by allowing an application to see the illusion that the operating system has plenty of memory, without realizing that some of the virtual memory it uses is actually on disk because of the huge difference in reading and write speeds between memory and disk and that this part of virtual memory is Because of the huge difference in reading and write speeds between memory and disk, this part of virtual memory is very slow to read and write, as we described in Why CPU access to hard disk is slow.</p>
+<p>Random access to 4KB of data in an SSD takes 1,500 times longer than accessing main memory, and mechanical disk seek time is 100,000 times longer than accessing main memory</p>
+<p>Such a huge performance difference makes it possible for the process that triggers Swapping to experience performance loss, and frequent swapping in and out of the same page can lead to extremely noticeable performance jitter. Linux provides two different ways to enable this.</p>
+<p>Linux provides two different ways to enable Swapping, Swap Partition, and Swapfile.</p>
+<p>Swap partitions are separate areas on the hard disk that will only be used for swap partitions and no other files can be stored on the area, and we can use the swapon -s command to see the swap partitions on the current system.<br>Swap files are special files in the file system which are also not much different from other files in the file system; the<br>The size of the swap partition is something that needs to be set manually by the system administrator, however, it is best to set different swap partition sizes for different scenarios, for example, the swap partition size on the desktop system can be twice the system memory, which allows us to run more applications at the same time; the swap partition on the server should be turned off or a small number of swap partitions should be used, however once swap partitioning is enabled, monitoring should be introduced to monitor application performance.</p>
+<p>Now that we have a good understanding of Swapping on Linux, we will return to the question we want to discuss in this article - “Why Linux needs Swapping” - and we will cover two aspects of Swapping: the problem it solves, the trigger entry point and the execution path.</p>
+<p>Swapping can directly swap out of memory relatively little-used pages in a process and immediately allocate memory to the executing process.<br>Swapping can swap idle pages in a process out of memory, preparing the memory for future use by other processes.</p>
+<h2 id="Out-of-memory"><a href="#Out-of-memory" class="headerlink" title="Out of memory"></a>Out of memory</h2><p>When the system needs more memory than the available physical memory, the kernel will swap the infrequently used memory pages to disk to make memory available for the current process and ensure the availability of the executing process.</p>
+<p>Direct Page Reclaim is triggered when Linux calls __alloc_pages_nodemask to request new memory pages. This function first looks for available pages in the free page list, and if there are no available pages, it enters the __alloc_pages_slowpath function to allocate memory pages. In contrast, this function allocates memory by following the steps below.</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">static inline struct page * __alloc_pages_slowpath(gfp_t gfp_mask, unsigned int order, struct alloc_context *ac) &#123;</span><br><span class="line">    ...</span><br><span class="line">    if (alloc_flags &amp; ALLOC_KSWAPD)</span><br><span class="line">        wake_all_kswapds(order, gfp_mask, ac);</span><br><span class="line"></span><br><span class="line">    page = get_page_from_freelist(gfp_mask, order, alloc_flags, ac);</span><br><span class="line">    if (page) goto got_pg;</span><br><span class="line"></span><br><span class="line">    if (can_direct_reclaim &amp;&amp; (costly_order || (order &gt; 0 &amp;&amp; ac-&gt;migratetype ! = MIGRATE_MOVABLE)) &amp;&amp; !gfp_pfmemalloc_allowed(gfp_mask)) &#123;</span><br><span class="line">        page = __alloc_pages_direct_compact(gfp_mask, order, alloc_flags, ac, INIT_COMPACT_PRIORITY, &amp;compact_result);</span><br><span class="line">        if (page) goto got_pg;</span><br><span class="line">        ...</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line"> retry:</span><br><span class="line">    page = __alloc_pages_direct_reclaim(gfp_mask, order, alloc_flags, ac, &amp;did_some_progress);</span><br><span class="line">    page = __alloc_pages_direct_compact(gfp_mask, order, alloc_flags, ac, compact_priority, &amp;compact_result);</span><br><span class="line">    page = __alloc_pages_may_oom(gfp_mask, order, ac, &amp;did_some_progress);</span><br><span class="line"> got_pg:</span><br><span class="line">    return page;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>wake up the swap thread to reclaim memory in the background and try to call get_page_from_freelist to quickly fetch a memory page from the free list.<br>expensive memory requests will first call __alloc_pages_direct_compact to try to compress memory pages and call get_page_from_freelist to find free memory pages in the compressed memory.<br>call __alloc_pages_direct_reclaim to directly reclaim and allocate new memory pages.<br>call __alloc_pages_direct_compact again to try to compress memory and get free memory pages.<br>calling __alloc_pages_may_oom to allocate memory, which triggers an out-of-memory warning to randomly kill several processes on the operating system if the memory allocation fails.<br>Although the steps for acquiring memory pages have been heavily truncated, they show several common ways Linux acquires memory when it is also running low: memory compression, direct reclamation, and killing some processes by triggering an out-of-memory error.</p>
+<h2 id="Memory-Idle"><a href="#Memory-Idle" class="headerlink" title="Memory Idle"></a>Memory Idle</h2><p>A large amount of memory used by applications during startup is often not used after startup, and through a daemon running in the background, we can swap this once-used memory to disk to make room for other memory requests. kswapd is the Linux daemon for page replacement, and it is also the main process responsible for swapping idle memory. It reclaims free memory from memory pages when it falls below a certain level to ensure that other processes in the system can get the requested memory as soon as possible, as shown in the following figure.</p>
+<p>When the free page is less than WMARK_LOW, the kswapd process will start working. It will swap the memory pages to disk until the free page water level returns to WMARK_HIGH, but when the free page water level is below WMARK_MIN it will trigger the direct memory recycling mentioned in the previous section, while a water level above WMARK_HIGH means that the free memory is sufficient and does not need to be recycled.</p>
+<p>The Linux operating system uses the Least Recently Used (LRU) algorithm to replace pages in memory. Each zone in the system holds two types of chains in memory, active_list, and inactive_list, where the former contains active memory pages and the latter store’s memory pages that are candidates for recycling. In addition, Linux also divides the lru_list into the following categories based on the characteristics of the memory pages.</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">enum lru_list &#123;</span><br><span class="line">	LRU_INACTIVE_ANON = LRU_BASE,</span><br><span class="line">	LRU_ACTIVE_ANON = LRU_BASE + LRU_ACTIVE,</span><br><span class="line">	LRU_INACTIVE_FILE = LRU_BASE + LRU_FILE,</span><br><span class="line">	LRU_ACTIVE_FILE = LRU_BASE + LRU_FILE + LRU_ACTIVE,</span><br><span class="line">	LRU_UNEVICTABLE,</span><br><span class="line">	NR_LRU_LISTS</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<p>The ones containing ANON indicate anonymous memory pages, which store contents such as process stacks unrelated to files, while the ones containing FILE indicate file-related memory, i.e. memory corresponding to program files or data, and the last one LRU_UNEVICTABLE indicates memory pages that are forbidden to be recycled.</p>
+<p>Whenever a memory page is accessed, Linux moves the accessed memory page to the head of the chain, so the ‘oldest’ memory page in the chain is at the end of the active chain. The role of the daemon kswapd is to balance the length of the two chains by moving the memory page at the end of the active chain to the head of the inactive chain and waiting to be recycled, while the function shrink_zones is responsible for recycling the LRU function is responsible for reclaiming the inactive memory pages in the LRU table.</p>
+<h1 id="Summary"><a href="#Summary" class="headerlink" title="Summary"></a>Summary</h1><p>Many people think that when the system runs out of memory it should immediately trigger an Out of memory (OOM) and kill the process, but Swapping provides an alternative for system administrators to use the swap space on the disk to avoid a direct exit of the program, in exchange for partial availability of the service at the cost of reduced quality of service. a mechanism in Linux exists mainly for the two common causes of insufficient memory and idle memory</p>
+<p>Swapping can directly swap out of memory relatively little-used pages in a process: when the system needs more memory than the available physical memory, the kernel will swap the infrequently used memory pages in memory to disk to make memory available for the current process, ensuring the availability of the executing process.<br>Swapping can swap out of memory idle pages in a process: a large amount of memory used by an application during the startup phase is often not used after it starts, and with a daemon running in the background, we can swap this part of memory that is only used once to disk to reserve space for other memory requests.</p>
+
+
+<!--<a href="https://www.gtygo.com/7.html#disqus_thread" class="article-comment-link">Comments</a>
+<div id="disqus_thread"></div>
+<script type="text/javascript">
+    /* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
+    var disqus_shortname = ''; // required: replace example with your forum shortname
+
+    /* * * DON'T EDIT BELOW THIS LINE * * */
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a target="_blank" rel="noopener" href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+-->
+<div style="display:none">
+<script src="http://s4.cnzz.com/stat.php?id=&web_id=" language="JavaScript"></script>script>
+</div>
+
+
+
+
+
+
+</body>
+</html>
