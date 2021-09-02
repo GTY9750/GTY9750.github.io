@@ -1,0 +1,119 @@
+<html>
+<head>
+	
+	<title>Why does the database lose data?</title>
+	<meta name="keywords" content="information tech" />
+
+    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+    
+	   <link href="/css/main.css?v=3" rel="stylesheet" type="text/css" />
+    
+        
+<script src="/js/util.js"></script>
+
+        <script>
+            if(isMobile()) {
+                loadjscssfile('../css/mobile.css', 'css');
+            } else {
+                loadjscssfile('../css/desktop.css', 'css');
+            }
+        </script> 
+    
+
+    <link rel="alternate" type="application/atom+xml" href="/atom.xml" title="Atom feed">
+
+    
+	<link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=3"/>
+    
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-76SLJ1L5G2"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-76SLJ1L5G2');
+</script>
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-76SLJ1L5G2"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+
+        gtag('config', 'G-76SLJ1L5G2');
+    </script>
+    <script data-ad-client="ca-pub-8355064206464637" async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+
+<body>
+
+
+<h2 class="title">Why does the database lose data?</h2>
+<!--
+<div style="text-align:center;margin-top: -10px;">
+<div class="article-category">
+发表于2021年9月2日
+
+
+
+
+ </div>
+-->
+</div>
+
+<ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#Why-does-the-database-lose-data"><span class="toc-text">Why does the database lose data?</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#Hardware-Errors"><span class="toc-text">Hardware Errors</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Complex-implementation"><span class="toc-text">Complex implementation</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Summary"><span class="toc-text">Summary</span></a></li></ol></li></ol>
+<h1 id="Why-does-the-database-lose-data"><a href="#Why-does-the-database-lose-data" class="headerlink" title="Why does the database lose data?"></a>Why does the database lose data?</h1><p>Database management systems are an important part of software today. Open-source databases such as MySQL, PostgreSQL, and commercially available Oracle are everywhere, and almost all services rely on database management systems to store data.</p>
+<p>It sounds like a matter of course that databases do not lose data, and persistence should be the most basic guarantee for databases, but in this complex world, it is very difficult to guarantee that data will not be lost. In today’s world, we can find many examples of databases with problems that lead to data loss.</p>
+<p>MongoDB has failed to guarantee persistence for a long time in the past, and data can be lost easily1.<br>RocksDB DeleteRange function causing data loss problems2.<br>Tencent Cloud hard drives failure, resulting in complete loss of production data online for startups3.<br>Whether it is an open-source database or a service provided by a cloud provider, data loss can occur. In this paper, the causes of database data loss are grouped into the following areas, and we will expand on these causes in detail.</p>
+<p>Human factors causing operation and configuration errors as the primary cause of database data loss.<br>Data loss due to corruption of the disks used for storing data in the database.<br>the complexity of the functions and implementation of the database and the risk of data loss if the data is not flushed to disk promptly.<br>Human error<br>Human error is the primary reason for data loss. In the Tencent Cloud data loss accident, we will find that although the cause of the accident is hardware failure, it is the improper operation of the operation and maintenance personnel that ultimately leads to the damage of data integrity.</p>
+<p>The first is that the normal data relocation process opens data verification by default, which can effectively detect and avoid data abnormalities at the source end and guarantee the correctness of relocation data after opening, but the operation and maintenance personnel closed the data verification in violation of the law to speed up the completion of the relocation task.</p>
+<p>Secondly, after the normal data relocation is completed, the source warehouse data should be retained for 24 hours for data recovery in case of relocation anomalies, but the operation and maintenance personnel violated the source warehouse data recovery to reduce the warehouse utilization rate as soon as possible.</p>
+<p>The best way to reduce human error is to standardize operations such as data backup and operation and maintenance and use automated processes to handle operations involving data security, to reduce the risks associated with human intervention.</p>
+<p>For software engineers, we should be in awe of the production environment and be careful to perform all operations in the production environment, recognizing that all operations may have an impact on services that are running online so that the probability of similar problems can be reduced.</p>
+<h2 id="Hardware-Errors"><a href="#Hardware-Errors" class="headerlink" title="Hardware Errors"></a>Hardware Errors</h2><p>As we described in the Why Basic Services Should Not Be Highly Available article, it is extremely fortuitous that any online service will work properly, and there is no way to guarantee 100% availability if the time is long enough.4 Hardware such as disks are likely to break if they are used long enough, and according to the Google paper, the average annual failure rate of hard disks over 5 years is According to the data in the Google paper, the annualized failure rates (AFR) of hard disks over 5 years is 8.6%5.</p>
+<p>In 2018, the cause of the Tencent Cloud data corruption incident was a single copy data error caused by a Silent data corruption (SDC)6. Silent disk errors are errors that are not detected by the disk firmware or the host operating system and include the following: loose cables, unreliable power supply, external vibration, network-induced data loss, and other issues.</p>
+<p>It is because data corruption on disks is so common that we need data redundancy to ensure that disks can recover disk data in the event of an Unrecoverable Read Error (URE). Redundant Array of Independent Disks (RAID) is a data storage virtualization technology that combines multiple physical disks into a single logical disk, increasing data redundancy and performance7.</p>
+<p>RAID uses three main strategies to manage the data on a disk: Striping, Mirroring, and Parity.</p>
+<p>RAID 0 uses data partitioning, but no mirroring or parity. It provides little to no protection for the data on the disk, and damage to any of the disks means that the data therein cannot be recovered, but it also provides better performance because there is no redundancy.<br>RAID 1 uses data mirroring, but there is no parity or data splitting. All data is written to two identical disks, and both disks are externally available for data reading. This approach reduces disk utilization, but improves read performance, and provides backups.</p>
+<p>RAID uses a partitioning and mirroring strategy that is similar to partitioning and replication in distributed databases. Partitioning and partitioning slice and dice data and assign it to different disks or machines, while mirroring and replication both serve to replicate data.</p>
+<p>Many modern operating systems provide software-based RAID implementations, and some cloud service vendors use self-developed file systems or redundant backup mechanisms.</p>
+<p>Google uses Google File System to manage files, which stores files in blocks and manages all file blocks through a master service8.<br>Microsoft uses erasure coding in Azure to calculate redundant data9.<br>Hardware errors are common in production environments, and the only way to reduce the possibility of data loss is through data redundancy and checksums, but adding redundancy can only continuously reduce the probability of data loss and cannot avoid it 100%.</p>
+<h2 id="Complex-implementation"><a href="#Complex-implementation" class="headerlink" title="Complex implementation"></a>Complex implementation</h2><p>The database management system will eventually store data on disk, for many databases, data on disk means that the persistence is complete. As the lower layer of the database system, the disk can store data stably and is the basis for the database to be able to persist data.</p>
+<p>Many people mistakenly believe that using write will write data to disk, but this is wrong. Not only does the write function not guarantee that data is written to disk, but some implementations also do not even guarantee that the target space is reserved for the written data.10 In general, a write to a file only updates the page cache in memory, which is not immediately flushed to disk; the operating system’s flusher kernel thread will drop the data to disk when the following conditions are met11.</p>
+<p>free memory drops to a specific threshold and the memory space occupied by dirty pages needs to be released.<br>dirty data persists for a certain amount of time and the oldest data is written to disk.<br>execution of sync or fsync system calls by user processes.<br>If we want to flush the data to disk immediately, we need to call a function such as fsync immediately after executing write.12 The database will inform the caller that the data has been successfully written only when a function such as fsync returns.</p>
+<p>write and fsync are very important in database management systems as they are the core methods that provide persistence guarantees. Some developers write the wrong code with a wrong understanding of write and this can lead to data loss.</p>
+<p>In addition to persistence features, databases may also need to provide ACID (Atomicity, Consistency, Isolation, Durability) or BASE (Basically Available, Soft state, Eventual consistency) guarantees. Some databases also provide complex features such as sharding, replicas, and distributed transactions, the introduction of these features also increases the complexity of the database system, and as the complexity of the program increases, the possibility of problems also grows.</p>
+<h2 id="Summary"><a href="#Summary" class="headerlink" title="Summary"></a>Summary</h2><p>Database management systems are among the most complex and important systems in software engineering, and the proper operation of almost all services is based on the assumption that the database will not lose data. However, databases cannot fully guarantee data security because of the following reasons shown below.</p>
+<p>The a high risk of data loss due to operational errors by operations staff during configuration and operation.<br>Hardware errors in the underlying disks on which the database depends, resulting in unrecoverable data.<br>database system supports a very large number of functions and complex, data may cause data loss if the data does not fall on disk promptly.</p>
+
+
+<!--<a href="https://www.gtygo.com/6.html#disqus_thread" class="article-comment-link">Comments</a>
+<div id="disqus_thread"></div>
+<script type="text/javascript">
+    /* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
+    var disqus_shortname = ''; // required: replace example with your forum shortname
+
+    /* * * DON'T EDIT BELOW THIS LINE * * */
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a target="_blank" rel="noopener" href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+-->
+<div style="display:none">
+<script src="http://s4.cnzz.com/stat.php?id=&web_id=" language="JavaScript"></script>script>
+</div>
+
+
+
+
+
+
+</body>
+</html>
