@@ -1,0 +1,133 @@
+<html>
+<head>
+	
+	<title>The underlying principles of the go language</title>
+	<meta name="keywords" content="information tech" />
+
+    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+    
+	   <link href="/css/main.css?v=3" rel="stylesheet" type="text/css" />
+    
+        
+<script src="/js/util.js"></script>
+
+        <script>
+            if(isMobile()) {
+                loadjscssfile('../css/mobile.css', 'css');
+            } else {
+                loadjscssfile('../css/desktop.css', 'css');
+            }
+        </script> 
+    
+
+    <link rel="alternate" type="application/atom+xml" href="/atom.xml" title="Atom feed">
+
+    
+	<link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=3"/>
+    
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-76SLJ1L5G2"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-76SLJ1L5G2');
+</script>
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-76SLJ1L5G2"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+
+        gtag('config', 'G-76SLJ1L5G2');
+    </script>
+    <script data-ad-client="ca-pub-8355064206464637" async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+
+<body>
+
+
+<h2 class="title">The underlying principles of the go language</h2>
+<!--
+<div style="text-align:center;margin-top: -10px;">
+<div class="article-category">
+发表于2021年9月4日
+
+
+
+
+ </div>
+-->
+</div>
+
+<ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#The-underlying-principles-of-the-go-language"><span class="toc-text">The underlying principles of the go language</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#Machine-Code-Generation"><span class="toc-text">Machine Code Generation</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Instruction-Set-Architecture"><span class="toc-text">Instruction Set Architecture</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Machine-Code-Generation-1"><span class="toc-text">Machine Code Generation</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Assembler"><span class="toc-text">Assembler</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Summary"><span class="toc-text">Summary</span></a></li></ol></li></ol></li></ol>
+<h1 id="The-underlying-principles-of-the-go-language"><a href="#The-underlying-principles-of-the-go-language" class="headerlink" title="The underlying principles of the go language"></a>The underlying principles of the go language</h1><h2 id="Machine-Code-Generation"><a href="#Machine-Code-Generation" class="headerlink" title="Machine Code Generation"></a>Machine Code Generation</h2><p>The last stage of Go language compilation is machine code generation based on SSA intermediate code, which is the binary code that can run on the target CPU architecture.</p>
+<p>The machine code generation process is a downgrading (lower) of the SSA intermediate code. In the SSA intermediate code downgrading process, the compiler rewrites some values to values specific to the target CPU architecture, and the downgrading process handles all machine-specific rewriting rules and optimizes the code to some extent. At the end of the SSA intermediate code generation phase, the code of the Go function body is converted into the cmd/compile/internal/obj.</p>
+<h2 id="Instruction-Set-Architecture"><a href="#Instruction-Set-Architecture" class="headerlink" title="Instruction Set Architecture"></a>Instruction Set Architecture</h2><p>The first thing we need to introduce is the instruction-set architecture. Although we covered the instruction-set architecture in the compilation process overview in Section 1, we need to introduce more knowledge about the instruction-set architecture here.</p>
+<p>An instruction-set architecture is an abstract model of a computer, often called an architecture or computer architecture, that serves as an interface and bridge between computer software and hardware1; an application written for a particular instruction-set architecture can run on all machines that support that instruction-set architecture, i.e., if the current application supports the x86 instruction set, then it can run on all machines that use the x86 Each instruction set architecture defines the supported data structures, registers, hardware support for managing main memory (e.g., memory coherency, address model, and virtual memory), supported instruction sets, and IO models, and its introduction introduces an abstraction layer between software and hardware, allowing the same binary to It introduces a layer of abstraction between software and hardware, allowing the same binary to run on different versions of hardware.</p>
+<p>If a programming language wants to run on all machines, it can convert the intermediate code into machine code using different instruction set architectures, which is much simpler than porting separately for different hardware.</p>
+<p>The most common way of classifying instruction set architectures is to divide them into complex instruction sets (CISC) and reduced instruction sets (RISC) based on the complexity of the instructions. Complex instruction set architectures contain many specific instructions, but some of them are rarely used by programs, while reduced instruction sets implement only frequently used instructions, and less frequently used operations are implemented by combining simple instructions.</p>
+<p>Complex instruction sets are characterized by a large and complex number of instructions, and the byte length of each instruction is not equal. x86 is a common complex instruction set processor with a wide range of instruction lengths, from 1 to 15 bytes, and for instructions of variable length, the computer must make additional judgments about the instructions, which requires additional performance loss2.</p>
+<p>Each instruction in the instruction set uses a standard byte length and takes much less time to execute than a complex instruction set, and the processor can streamline the execution when processing instructions, improving support for parallelism. As a common streamlined instruction set processor, the arm uses 4 bytes as the fixed length of instructions, omitting the performance loss of judgment instructions.3 The streamlined instruction set uses the familiar 20/80 principle, using 20% of the base instructions and their combinations to solve problems.</p>
+<p>The first computers used complex instruction sets because computer performance and memory were limited at the time, and the industry needed to minimize the number of instructions the machine needed to execute, so highly coded, unequal length, and multiple operand instructions were preferred. However, with the increase in computer performance, the streamlined instruction set emerged as a design that sacrifices code density for simple implementation; in addition, the rapid increase in hardware also brought more registers and higher clock frequencies, and software developers no longer have direct access to assembly code, but generate instructions through compilers and assemblers, and complex machine instructions are difficult for compilers to utilize, so streamlined instructions are more appropriate in This scenario is more suitable.</p>
+<p>The use of a complex instruction set and streamlined instruction set is a design trade-off, after so many years of development, the two instruction sets also learn from each other and learn from each other, with the very beginning when it was first designed has been a big difference, for software engineers, complex hardware devices for us is already the next three layers of knowledge in the field, in fact, not too much to master, but the reader interested in the instruction set architecture can find some information to expand their horizons.</p>
+<h2 id="Machine-Code-Generation-1"><a href="#Machine-Code-Generation-1" class="headerlink" title="Machine Code Generation"></a>Machine Code Generation</h2><p>Machine code generation in the Go compiler consists of two parts, the cmd/compile/internal/ssa package, which is responsible for SSA intermediate code degradation and specific processing according to the target architecture, and cmd/internal/obj4, which is responsible for machine code generation.</p>
+<p>cmd/compile/internal/ssa which is primarily responsible for downgrading SSA intermediate code, performing architecture-specific optimizations and rewrites and generating the cmd/compile/internal/obj.Prog directive.<br>cmd/internal/obj acts as an assembler to convert these directives into machine code for this compilation.<br>SSA Degradation #<br>SSA degradation is done during the intermediate code generation process, where nearly 50 rounds of processing, lower and later stages are part of the SSA degradation process, and so many rounds of processing convert SSA into machine-specific operations: var passes = […</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">var passes = [...] pass&#123;</span><br><span class="line">	...</span><br><span class="line">	&#123;name: &quot;lower&quot;, fn: lower, required: true&#125;,</span><br><span class="line">	&#123;name: &quot;lowered deadcode for cse&quot;, fn: deadcode&#125;, // deadcode immediately before CSE avoids CSE making dead values live again</span><br><span class="line">	&#123;name: &quot;lowered cse&quot;, fn: cse&#125;,</span><br><span class="line">	...</span><br><span class="line">	&#123;name: &quot;trim&quot;, fn: trim&#125;, // remove empty blocks</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>The first stage of SSA descending execution is lower, and the entry method for this stage is the cmd/compile/internal/ssa.lower function, which converts the SSA intermediate code into machine-specific instructions.</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">func lower(f *Func) &#123;</span><br><span class="line">	applyRewrite(f, f.Config.lowerBlock, f.Config.lowerValue)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>The two functions lower block and lowerValue passed to cmd/compile/internal/ssa.applyRewrite are determined during the initialization of the SSA configuration in the intermediate code generation phase, and they convert the block of code in the function and the value in the block of code, respectively.</p>
+<p>Assuming the target machine uses the x86 architecture, the final call to cmd/compile/internal/ssa.rewriteBlock386 and cmd/compile/internal/ssa.rewriteValue386 are two huge switch statements, the former totaling These two functions are two huge switch statements, the former totaling over 2000 lines, the latter nearly 700 lines, and the functions for handling x86 architecture rewrites totaling nearly 30,000 lines of code, which you can find in cmd/compile/internal/ssa/rewrite386.go.</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line">func rewriteValue386(v *Value) bool &#123;</span><br><span class="line">	switch v.Op &#123;</span><br><span class="line">	case Op386ADCL:</span><br><span class="line">		return rewriteValue386_Op386ADCL_0(v)</span><br><span class="line">	case Op386ADDL:</span><br><span class="line">		return rewriteValue386_Op386ADDL_0(v) || rewriteValue386_Op386ADDL_10(v) || rewriteValue386_Op386ADDL_20(v)</span><br><span class="line">	...</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">func rewriteValue386_Op386ADCL_0(v *Value) bool &#123;</span><br><span class="line">	// match: (ADCL x (MOVLconst [c]) f)</span><br><span class="line">	// cond:</span><br><span class="line">	// result: (ADCLconst [c] x f)</span><br><span class="line">	for &#123;</span><br><span class="line">		_ = v.Args[2]</span><br><span class="line">		x := v.Args[0]</span><br><span class="line">		v_1 := v.Args[1]</span><br><span class="line">		if v_1.Op ! = Op386MOVLconst &#123;</span><br><span class="line">			break</span><br><span class="line">		&#125;</span><br><span class="line">		c := v_1.AuxInt</span><br><span class="line">		f := v.Args[2]</span><br><span class="line">		v.reset(Op386ADCLconst)</span><br><span class="line">		v.AuxInt = c</span><br><span class="line">		v.AddArg(x)</span><br><span class="line">		v.AddArg(f)</span><br><span class="line">		return true</span><br><span class="line">	&#125;</span><br><span class="line">	...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>The rewrite process converts generic SSA intermediate code into target architecture-specific instructions. The above rewriteValue386_Op386ADCL_0 function replaces ADCL and MOVLconst instructions with ADCLconst, which reduces the time and resources needed to execute on the target hardware by compressing and optimizing the instructions.</p>
+<p>We have already described the execution of the call to cmd/compile/internal/gc.buildssa in cmd/compile/internal/gc.compileSSA in the previous section on intermediate code generation, and we continue here with the execution of cmd/compile/internal/gc. buildssa function returns the following logic.</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">func compileSSA(fn *Node, worker int) &#123;</span><br><span class="line">	f := buildssa(fn, worker)</span><br><span class="line">	pp := newProgs(fn, worker)</span><br><span class="line">	defer pp.Free()</span><br><span class="line">	genssa(f, pp)</span><br><span class="line"></span><br><span class="line">	pp.Flush()</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>The cmd/compile/internal/gc.genssa function creates a new cmd/compile/internal/gc.Progs structure and stores all the generated SSA intermediate code in the new structure, the ssa.html file we got in the previous section contains the last generated intermediate code.</p>
+<p>The above output is already very similar to the final generated assembly code, and the subsequent call to cmd/compile/internal/gc.Progs.Flush converts SSA to assembly code using the assembler in the cmd/internal/obj package: func (pp *Progs.</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">func (pp *Progs) Flush() &#123;</span><br><span class="line">	plist := &amp;obj.Plist&#123;Firstpc: pp.Text, Curfn: pp.curfn&#125;</span><br><span class="line">	obj.Flushplist(Ctxt, plist, pp.NewProg, myimportpath)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>The lower and subsequent stages in cmd/compile/internal/gc.buildssa transform, inspect, and optimize the SSA to generate machine-specific intermediate code, which is then exported to cmd/compile/internal/gc.genssa via cmd/compile/internal/gc. internal/gc.Progs object, which is the last step before the code enters the assembler.</p>
+<h2 id="Assembler"><a href="#Assembler" class="headerlink" title="Assembler"></a>Assembler</h2><p>The Go language assembler is based on the input type of the Plan 9 assembler, and the Go language has very little information about the assembly language Plan 9 and assemblers.</p>
+<p>The details vary with architecture, and we apologize for the imprecision; the situation is not well-defined.5</p>
+<p>We should not get bogged down in details when studying assembler and assembly language, but simply understanding the execution logic of assembly language can help us read assembly code quickly. When we compile the following code into assembly instructions, we get the following.</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">$ cat hello.go</span><br><span class="line">package hello</span><br><span class="line"></span><br><span class="line">func hello(a int) int &#123;</span><br><span class="line">	c := a + 2</span><br><span class="line">	return c</span><br><span class="line">return c&#125;</span><br><span class="line">$ GOOS=linux GOARCH=amd64 go tool compile -S hello.go</span><br><span class="line">&quot;&quot;.hello STEXT nosplit size=15 args=0x10 locals=0x0</span><br><span class="line">	0x0000 00000 (main.go:3) TEXT &quot;&quot;.hello(SB), NOSPLIT, $0-16</span><br><span class="line">	0x0000 00000 (main.go:3) FUNCDATA $0, gclocals-33cdeccccebe80329f1fdbee7f5874cb(SB)</span><br><span class="line">	0x0000 00000 (main.go:3) FUNCDATA $1, gclocals-33cdeccccebe80329f1fdbee7f5874cb(SB)</span><br><span class="line">	0x0000 00000 (main.go:3) FUNCDATA $3, gclocals-33cdeccccebe80329f1fdbee7f5874cb(SB)</span><br><span class="line">	0x0000 00000 (main.go:4) PCDATA $2, $0</span><br><span class="line">	0x0000 00000 (main.go:4) PCDATA $0, $0</span><br><span class="line">	0x0000 00000 (main.go:4) MOVQ &quot;&quot;.a+8(SP), AX</span><br><span class="line">	0x0005 00005 (main.go:4) ADDQ $2, AX</span><br><span class="line">	0x0009 00009 (main.go:5) MOVQ AX, &quot;&quot;. ~r1+16(SP)</span><br><span class="line">	0x000e 00014 (main.go:5) RET</span><br><span class="line">	0x0000 48 8b 44 24 08 48 83 c0 02 48 89 44 24 10 c3 H.D$.H.. .H.D$...</span><br><span class="line">...</span><br></pre></td></tr></table></figure>
+<p>The above assembly code is generated by the function cmd/internal/obj.Flushplist, which calls the architecture-specific Preprocess and Assemble methods.</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">func Flushplist(ctxt *Link, plist *Plist, newprog ProgAlloc, myimportpath string) &#123;</span><br><span class="line">	...</span><br><span class="line"></span><br><span class="line">	for _, s := range text &#123;</span><br><span class="line">		mkfwd(s)</span><br><span class="line">		linkpatch(ctxt, s, newprog)</span><br><span class="line">		Preprocess(ctxt, s, newprog)</span><br><span class="line">		Assemble(ctxt, s, newprog)</span><br><span class="line">		linkpcln(ctxt, s)</span><br><span class="line">		ctxt.populateDWARF(plist.Curfn, s, myimportpath)</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>The Go compiler determines which Preprocess and Assemble methods to call in the outermost main function, and the compiler initializes the configuration used by the current architecture based on the target hardware in cmd/compile.archInits, as mentioned in 2.1.4.</p>
+<p>If the architecture of the target machine is x86, then these two functions end up using cmd/internal/obj/x86.preprocess and cmd/internal/obj/x86.span6. The author will not expand on these two particularly complex underlying functions here, but interested readers can find the target functions via the links Interested readers can learn about the preprocessing and assembly process by following the links to the target functions, and the machine code generation is also done by the combination of these two functions.</p>
+<h3 id="Summary"><a href="#Summary" class="headerlink" title="Summary"></a>Summary</h3><p>As the last step of Go language compilation, machine code generation has reached the hardware and machine instruction level, where the processing of memory and registers is very complex and difficult to read, and it takes a lot of effort to master the steps and principles of processing here.</p>
+<p>As a software engineer, if you are not a Go compiler developer or need to deal with assembly language and machine instructions frequently, the return on investment for mastering this knowledge is too low, we just need to understand the process, fill in the blind spots in knowledge, and be able to quickly locate when we encounter problems.</p>
+
+
+<!--<a href="https://www.gtygo.com/15.html#disqus_thread" class="article-comment-link">Comments</a>
+<div id="disqus_thread"></div>
+<script type="text/javascript">
+    /* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
+    var disqus_shortname = ''; // required: replace example with your forum shortname
+
+    /* * * DON'T EDIT BELOW THIS LINE * * */
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a target="_blank" rel="noopener" href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+-->
+<div style="display:none">
+<script src="http://s4.cnzz.com/stat.php?id=&web_id=" language="JavaScript"></script>script>
+</div>
+
+
+
+
+
+
+</body>
+</html>
